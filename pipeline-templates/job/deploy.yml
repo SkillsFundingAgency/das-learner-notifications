@@ -2,9 +2,10 @@ parameters:
   ServiceConnection:
   SolutionBaseName:
   Environment:
+  OverrideBlockOnPossibleDataLoss:
 
 jobs:
-- deployment: DeployWebApp
+- deployment: Deploy
   pool:
     name: DAS - Continuous Deployment Agents
   environment: ${{ parameters.Environment }}
@@ -30,6 +31,7 @@ jobs:
             TemplateSecrets:
               LoggingRedisConnectionString: $(LoggingRedisConnectionString)
               ConfigurationStorageConnectionString: $(ConfigurationStorageConnectionString)
+              SharedStorageAccountConnectionString: $(SharedStorageAccountConnectionString)
         - template: azure-pipelines-templates/deploy/step/generate-config.yml@das-platform-building-blocks
           parameters:
             EnvironmentName: $(EnvironmentName)
@@ -39,7 +41,21 @@ jobs:
             StorageAccountResourceGroup: $(SharedEnvResourceGroup)
             TargetFileName: '*.schema.json'
             TableName: Configuration
-            ConfigurationSecrets: {} # remove this if there are no secrets that need to be mapped for config
+            ConfigurationSecrets: {}
+        - template: azure-pipelines-templates/deploy/step/sql-dacpac-deploy.yml@das-platform-building-blocks
+          parameters:
+            AzureSubscription: ${{ parameters.ServiceConnection }}
+            ServerName: $(SharedSQLServerFQDN)
+            SqlUsername: $(SharedSQLServerUsername)
+            DacpacFile: $(Pipeline.Workspace)/DacpacArtifact/src/${{ parameters.SolutionBaseName }}.Database/bin/Output/${{ parameters.SolutionBaseName }}.Database.dacpac
+            DatabaseName: $(DatabaseName)
+            OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss }}
+            Environment: ${{ parameters.Environment }}
+        - template: azure-pipelines-templates/deploy/step/function-deploy.yml@das-platform-building-blocks
+          parameters:
+            ServiceConnection: ${{ parameters.ServiceConnection }}
+            FunctionAppName: $(FunctionAppName)
+            DeploymentPackagePath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/${{ parameters.SolutionBaseName }}.zip
         - template: azure-pipelines-templates/deploy/step/app-deploy.yml@das-platform-building-blocks
           parameters:
             ServiceConnection: ${{ parameters.ServiceConnection }}
