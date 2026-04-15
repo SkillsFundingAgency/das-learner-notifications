@@ -62,5 +62,6 @@
   <ItemGroup>
     <Build Include="Tables\Notification.sql" />
     <Build Include="Tables\StatusHistory.sql" />
+    <Build Include="Data\SampleData.sql" />
   </ItemGroup>
 </Project>
