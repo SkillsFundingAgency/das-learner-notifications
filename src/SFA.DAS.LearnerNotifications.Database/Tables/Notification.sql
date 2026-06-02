@@ -6,7 +6,7 @@
     [Heading] [nvarchar](255) NOT NULL,
     [Body] [nvarchar](max) NOT NULL,
     LinkUrl [nvarchar](max) NULL,
-    [StatusId] [tinyint] NOT NULL Constraint [FK_Notification_NotificationStatus] Foreign Key References [dbo].[NotificationStatus]([StatusId]),
+    [StatusId] [tinyint] NOT NULL Constraint [FK_Notification_NotificationStatus] Foreign Key References [dbo].[NotificationStatusType]([Id]),
     [NotificationTime] [datetime2] NULL,
     [TimeToExpire] [datetime2] NULL,
     [TimeReceived] [datetime2] NULL,
