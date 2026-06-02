@@ -23,7 +23,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
             Config = TestRunBindings.Config;
             DataContext = dataContext;
             TimeToWait = TimeSpan.Parse(Config["TimeToWait"] ?? "00:01:00");
-            TimeToPause = TimeSpan.Parse(Config["PauseTime"] ?? "00:00:10");
+            TimeToPause = TimeSpan.Parse(Config["TimeToPause"] ?? "00:00:10");
         }
 
         //public async Task Send<T>(string messageJson)
