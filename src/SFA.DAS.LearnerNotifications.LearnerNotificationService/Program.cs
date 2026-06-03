@@ -9,14 +9,16 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry;
 
 
-[assembly: NServiceBusTriggerFunction("sfa-das-learnernotifications")]
+//[assembly: NServiceBusTriggerFunction("sfa-das-learnernotifications", "ServiceBusConnectionString","TriggerFunction")]
 
 var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 builder.Configuration.AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
 builder.Configuration.AddEnvironmentVariables();
-
+builder.AddNServiceBus(config => { 
+    //set custom error queue name
+});
 var appInsightsCnn =  builder.Configuration["AzureMonitor:ConnectionString"];
 
 
