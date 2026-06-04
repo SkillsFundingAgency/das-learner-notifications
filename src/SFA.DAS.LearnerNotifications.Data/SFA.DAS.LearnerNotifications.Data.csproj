@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ProjectGuid>A644BCD7-58DE-49BB-93C9-6D9439A2D051</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Lucene.Net" Version="4.8.0-beta00016" />
+        <PackageReference Include="Lucene.Net.Analysis.Phonetic" Version="4.8.0-beta00016" />
+        <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.4" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.5.0" />
+        <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.5.0" />
+        <PackageReference Include="Azure.Identity" Version="1.17.1" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.80.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Domain\SFA.DAS.LearnerNotifications.Domain.csproj" />
+    </ItemGroup>
+</Project>

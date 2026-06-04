@@ -58,10 +58,14 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Notification.sql" />
     <Build Include="Tables\StatusHistory.sql" />
-    <Build Include="Data\SampleData.sql" />
+    <Build Include="Tables\Status.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Data\SampleData.sql" />
   </ItemGroup>
 </Project>

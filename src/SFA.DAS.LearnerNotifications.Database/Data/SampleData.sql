@@ -1,5 +1,13 @@
-﻿-- First, enable identity insert to specify our own IDs for sample data
+﻿INSERT INTO [dbo].[Status] ([Id], [Description])
+VALUES 
+    (1, 'Unread'),
+    (2, 'Acknowledged'),
+    (3, 'Hidden'),
+    (4, 'Expired');
+GO
+
 SET IDENTITY_INSERT [dbo].[Notification] ON;
+GO
 
 -- Insert sample notifications
 INSERT INTO [dbo].[Notification] (
@@ -13,7 +21,7 @@ INSERT INTO [dbo].[Notification] (
     [NotificationTime],
     [TimeToExpire],
     [TimeReceived],
-    [Link]  -- Added the Link column
+    [Link]
 )
 VALUES
 -- Notification 1: System Alert
@@ -24,7 +32,7 @@ VALUES
  DATEADD(day, -1, GETUTCDATE()), -- Yesterday
  DATEADD(day, 30, GETUTCDATE()), -- Expires in 30 days
  DATEADD(day, -2, GETUTCDATE()),
- '/system/maintenance'), -- Added Link
+ '/system/maintenance'),
 
 -- Notification 2: Training Reminder
 (1002, NEWID(), 'A3B2C1D4-E5F6-7890-ABCD-EF1234567890', 'TrainingReminder', 
@@ -34,7 +42,7 @@ VALUES
  DATEADD(day, -3, GETUTCDATE()), -- 3 days ago
  DATEADD(day, 7, GETUTCDATE()), -- Expires in 7 days
  DATEADD(day, -5, GETUTCDATE()),
- '/training/mandatory'), -- Added Link
+ '/training/mandatory'),
 
 -- Notification 3: Apprenticeship Update
 (1003, NEWID(), 'B4C3D2E1-F6E5-8901-BCDE-FA2345678901', 'ApprenticeshipUpdate', 
@@ -44,7 +52,7 @@ VALUES
  GETUTCDATE(), -- Now
  DATEADD(day, 14, GETUTCDATE()), -- Expires in 14 days
  DATEADD(hour, -1, GETUTCDATE()),
- '/learning/module-3'), -- Added Link
+ '/learning/module-3'),
 
 -- Notification 4: Assessment Notification
 (1004, NEWID(), 'B4C3D2E1-F6E5-8901-BCDE-FA2345678901', 'Assessment', 
@@ -54,7 +62,7 @@ VALUES
  DATEADD(day, -10, GETUTCDATE()), -- 10 days ago
  DATEADD(day, -1, GETUTCDATE()), -- Expired yesterday
  DATEADD(day, -12, GETUTCDATE()),
- '/assessments/upcoming'), -- Added Link
+ '/assessments/upcoming'),
 
 -- Notification 5: Feedback Request
 (1005, NEWID(), 'C5D4E3F2-1728-9012-CDEF-AB3456789012', 'Feedback', 
@@ -64,7 +72,7 @@ VALUES
  DATEADD(day, -2, GETUTCDATE()), -- 2 days ago
  DATEADD(day, 5, GETUTCDATE()), -- Expires in 5 days
  DATEADD(day, -2, GETUTCDATE()),
- '/feedback/session-123'), -- Added Link
+ '/feedback/session-123'),
 
 -- Notification 6: Account Verification
 (1006, NEWID(), 'C5D4E3F2-1728-9012-CDEF-AB3456789012', 'Account', 
@@ -74,9 +82,9 @@ VALUES
  GETUTCDATE(), -- Now
  DATEADD(day, 3, GETUTCDATE()), -- Expires in 3 days
  DATEADD(minute, -30, GETUTCDATE()),
- '/account/verify'), -- Added Link
+ '/account/verify'),
 
--- Notification 7: Notification with NULL Link (to show optional field) - FIXED GUID
+-- Notification 7: Notification with NULL Link
 (1007, NEWID(), 'D6E5F4A3-2839-0123-DE4A-BC4567890123', 'SystemAlert', 
  'Welcome to the Platform', 
  'Welcome to our apprenticeship platform! We are excited to have you on board.',
@@ -84,59 +92,63 @@ VALUES
  DATEADD(day, -30, GETUTCDATE()), -- 30 days ago
  DATEADD(day, 365, GETUTCDATE()), -- Expires in 1 year
  DATEADD(day, -30, GETUTCDATE()),
- NULL); -- NULL Link (optional field)
+ NULL);
+GO
 
 -- Turn off identity insert
 SET IDENTITY_INSERT [dbo].[Notification] OFF;
+GO
 
 -- Insert status history for the notifications
--- StatusHistoryId is NOT an identity column, so we must provide values
 INSERT INTO [dbo].[StatusHistory] (
-    [StatusHistoryId],  -- Must include this since it's not IDENTITY
+    [StatusHistoryId],
     [NotificationId],
     [Status],
     [ChangeDate]
 )
 VALUES
 -- Notification 1: Pending -> Sent -> Read
-(1, 1001, 0, DATEADD(day, -2, GETUTCDATE())), -- Pending
-(2, 1001, 1, DATEADD(day, -1, GETUTCDATE())), -- Sent
-(3, 1001, 2, DATEADD(hour, -12, GETUTCDATE())), -- Read
+(1, 1001, 0, DATEADD(day, -2, GETUTCDATE())),
+(2, 1001, 1, DATEADD(day, -1, GETUTCDATE())),
+(3, 1001, 2, DATEADD(hour, -12, GETUTCDATE())),
 
 -- Notification 2: Pending -> Sent -> Read
-(4, 1002, 0, DATEADD(day, -5, GETUTCDATE())), -- Pending
-(5, 1002, 1, DATEADD(day, -3, GETUTCDATE())), -- Sent
-(6, 1002, 2, DATEADD(day, -2, GETUTCDATE())), -- Read
+(4, 1002, 0, DATEADD(day, -5, GETUTCDATE())),
+(5, 1002, 1, DATEADD(day, -3, GETUTCDATE())),
+(6, 1002, 2, DATEADD(day, -2, GETUTCDATE())),
 
 -- Notification 3: Pending (only one status)
-(7, 1003, 0, DATEADD(hour, -1, GETUTCDATE())), -- Pending
+(7, 1003, 0, DATEADD(hour, -1, GETUTCDATE())),
 
 -- Notification 4: Pending -> Sent -> Expired
-(8, 1004, 0, DATEADD(day, -12, GETUTCDATE())), -- Pending
-(9, 1004, 1, DATEADD(day, -10, GETUTCDATE())), -- Sent
-(10, 1004, 3, DATEADD(day, -1, GETUTCDATE())), -- Expired
+(8, 1004, 0, DATEADD(day, -12, GETUTCDATE())),
+(9, 1004, 1, DATEADD(day, -10, GETUTCDATE())),
+(10, 1004, 3, DATEADD(day, -1, GETUTCDATE())),
 
 -- Notification 5: Pending -> Failed
-(11, 1005, 0, DATEADD(day, -2, GETUTCDATE())), -- Pending
-(12, 1005, 4, DATEADD(day, -1, GETUTCDATE())), -- Failed
+(11, 1005, 0, DATEADD(day, -2, GETUTCDATE())),
+(12, 1005, 4, DATEADD(day, -1, GETUTCDATE())),
 
 -- Notification 6: Pending -> Sent
-(13, 1006, 0, DATEADD(minute, -30, GETUTCDATE())), -- Pending
-(14, 1006, 1, GETUTCDATE()), -- Sent (just now)
+(13, 1006, 0, DATEADD(minute, -30, GETUTCDATE())),
+(14, 1006, 1, GETUTCDATE()),
 
 -- Notification 7: Pending -> Read
-(15, 1007, 0, DATEADD(day, -30, GETUTCDATE())), -- Pending
-(16, 1007, 2, DATEADD(day, -29, GETUTCDATE())); -- Read
+(15, 1007, 0, DATEADD(day, -30, GETUTCDATE())),
+(16, 1007, 2, DATEADD(day, -29, GETUTCDATE()));
+GO
 
 -- Verify the data
 SELECT 'Notifications:' AS TableName;
+GO
+
 SELECT 
     NotificationId,
     CorrelationId,
     LearnerAccountId,
     Category,
     Heading,
-    LEFT(Body, 50) + '...' AS BodyPreview, -- Truncate for readability
+    LEFT(Body, 50) + '...' AS BodyPreview,
     StatusId,
     NotificationTime,
     TimeToExpire,
@@ -144,7 +156,11 @@ SELECT
     Link
 FROM [dbo].[Notification] 
 ORDER BY [NotificationTime] DESC;
+GO
 
 SELECT 'Status History:' AS TableName;
+GO
+
 SELECT * FROM [dbo].[StatusHistory] 
 ORDER BY [ChangeDate] DESC;
+GO
