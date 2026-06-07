@@ -28,7 +28,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.Features
         private static string[] featureTags = ((string[])(null));
         
         private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new global::System.Globalization.CultureInfo("en-US"), "Features", "Receive And Store Learner Notifications", "As a learner\r\nI need the Learner Notifications Background Service to store my not" +
-                "ifications\r\nSo that they are available in the future", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
+                "ifications\r\nSo that I can view them within the Apprentice facing applications", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags, InitializeCucumberMessages());
         
 #line 1 "Receive And Store Learner Notifications.feature"
 #line hidden
