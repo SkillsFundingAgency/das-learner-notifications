@@ -16,13 +16,16 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.Data
             this.connectionString = connectionString;
         }
 
-        public TestSessionDataContext(DbContextOptions<TestSessionDataContext> options) : base(options)
-        {
-        }
-            
+          
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(connectionString, options => options.CommandTimeout(600));
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(TestSessionDataContext).Assembly);
         }
     }
 }

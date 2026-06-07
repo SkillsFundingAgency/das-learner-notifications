@@ -65,6 +65,6 @@
     <Build Include="Tables\NotificationStatusType.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="z.Script.PostDeployment.sql" />
+    <None Include="zScript.PostDeployment.sql" />
   </ItemGroup>
 </Project>

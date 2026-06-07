@@ -7,9 +7,10 @@ using System.Text;
 
 namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
 {
+
     public class TestingContext
     {
-        private IMessageSession messageSession;
+        private MessageSession messageSession;
         public TimeSpan TimeToWait { get; }
         public TimeSpan TimeToPause { get; }
         public IConfiguration Config { get; }
@@ -17,7 +18,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
 
         private readonly Random random = new(Guid.NewGuid().GetHashCode());
 
-        public TestingContext(IMessageSession messageSession, TestSessionDataContext dataContext)
+        public TestingContext(MessageSession messageSession, TestSessionDataContext dataContext)
         {
             this.messageSession = messageSession;
             Config = TestRunBindings.Config;
@@ -26,15 +27,9 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
             TimeToPause = TimeSpan.Parse(Config["TimeToPause"] ?? "00:00:10");
         }
 
-        //public async Task Send<T>(string messageJson)
-        //{
-        //    var message = System.Text.Json.JsonSerializer.Deserialize<T>(messageJson);
-        //    await endpointInstance.Send("sfa-das-payments-collectionperiod", message);
-        //}
-
         public async Task Send<T>(T message)
         {
-            await messageSession.Send("sfa-das-learnernotifications", message);
+            await messageSession.Send(message);
         }
 
         public long GenerateId(int maxValue = 1000000)

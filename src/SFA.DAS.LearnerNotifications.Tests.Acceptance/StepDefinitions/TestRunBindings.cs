@@ -18,6 +18,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
         [BeforeTestRun]
         public static async Task SetUpMessaging()
         {
+            System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
             Config = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appSettings.json"))
                 .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "appSettings.development.json"), true)

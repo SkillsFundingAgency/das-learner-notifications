@@ -7,13 +7,12 @@
   </PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Azure.Messaging.ServiceBus" Version="7.20.1" />
 		<PackageReference Include="Bogus" Version="35.6.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
-		<PackageReference Include="NServiceBus" Version="10.2.3" />
-		<PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="6.3.0" />
 		<PackageReference Include="NUnit" Version="3.14.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
 		<PackageReference Include="Reqnroll.Microsoft.Extensions.DependencyInjection" Version="3.3.4" />

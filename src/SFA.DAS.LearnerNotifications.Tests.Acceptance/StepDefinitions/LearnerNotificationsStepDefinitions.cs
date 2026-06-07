@@ -1,5 +1,7 @@
-﻿using Reqnroll;
+﻿using NUnit.Framework;
+using Reqnroll;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
+using SFA.DAS.LearnerNotifications.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +13,8 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
     {
         private readonly ScenarioContext scenarioContext;
         private readonly TestingContext testingContext;
-        private LearnerNotification learnerNotification; 
+        private LearnerNotification learnerNotification;
+        private Models.Notification storedNotification;
 
         public LearnerNotificationsStepDefinitions(ScenarioContext scenarioContext, TestingContext testingContext)
         {
@@ -41,11 +44,28 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
             await testingContext.Send(learnerNotification);
         }
 
-        [Then("the notification should be stored in the database")]
-        public void ThenTheNotificationShouldBeStoredInTheDatabase()
+        [Then("the notification should be stored")]
+        public async Task ThenTheNotificationShouldBeStoredInTheDatabase()
         {
-            throw new PendingStepException();
+            await testingContext.WaitForIt(() =>
+            {
+                storedNotification = testingContext.DataContext.Notifications.FirstOrDefault(notification => notification.CorrelationId == learnerNotification.CorrelationId);
+                return storedNotification != null;
+            }, "Failed to find the notification in the database");
+            //got the notification, now check the details are correct
+            Assert.AreEqual(learnerNotification.Heading, storedNotification.Heading, "Heading does not match.");
+            Assert.AreEqual(learnerNotification.Body, storedNotification.Body, "Body does not match.");
+            Assert.AreEqual(learnerNotification.LinkUrl, storedNotification.LinkUrl, "LinkUrl does not match.");
+            Assert.AreEqual(learnerNotification.Category, storedNotification.Category, "Category does not match.");
+            Assert.AreSame(learnerNotification.LearnerAccountId, storedNotification.LearnerAccountId, "LearnerAccountId does not match.");
         }
 
+        [Then("the notification should have a status of {string}")]
+        public void ThenTheNotificationShouldHaveAStatusOf(string statusDescription)
+        {
+            Assert.IsTrue(Enum.TryParse< NotificationStatus>(statusDescription, out NotificationStatus status),$"Failed to parse notification status. Status from step: {statusDescription}"); 
+            Assert.AreEqual(status, storedNotification.Status, $"Expected notification status to be {status} but the stored was {storedNotification.Status}");
+
+        }
     }
 }
