@@ -50,4 +50,9 @@
         <None Remove="Handlers\KsbHandlers\" />
         <None Remove="Handlers\TaskHandlers\" />
     </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Handlers\" />
+        <Folder Include="Handlers\Notifications\" />
+    </ItemGroup>
 </Project>

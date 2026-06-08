@@ -18,7 +18,7 @@
     "SFA.DAS.LearnerNotifications.Api": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:5052;http://localhost:5053",
+      "applicationUrl": "https://localhost:5051;http://localhost:5050",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

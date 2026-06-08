@@ -18,6 +18,9 @@ using SFA.DAS.Api.Common.Configuration;
 using SFA.DAS.Api.Common.Infrastructure;
 using SFA.DAS.LearnerNotifications.Api.AppStart;
 using SFA.DAS.LearnerNotifications.Api.Infrastructure;
+using SFA.DAS.LearnerNotifications.Application.Queries;
+using SFA.DAS.LearnerNotifications.Data;
+using SFA.DAS.LearnerNotifications.Domain.Configuration;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Api.AppStart;
 
@@ -60,9 +63,15 @@ namespace SFA.DAS.LearnerNotifications.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
+            services.Configure<LearnerNotificationsConfiguration>(_configuration.GetSection("LearnerNotifications"));
+            services.AddSingleton(cfg => cfg.GetService<IOptions<LearnerNotificationsConfiguration>>().Value);
             services.Configure<AzureActiveDirectoryConfiguration>(_configuration.GetSection("AzureAd"));
             services.AddSingleton(cfg => cfg.GetService<IOptions<AzureActiveDirectoryConfiguration>>().Value);
-            
+
+            var LearnerNotificationsConfiguration = _configuration
+                .GetSection("LearnerNotifications")
+                .Get<LearnerNotificationsConfiguration>();
+
             if (!ConfigurationIsLocalOrDev())
             {
                 var azureAdConfiguration = _configuration
@@ -76,7 +85,17 @@ namespace SFA.DAS.LearnerNotifications.Api
 
                 services.AddAuthentication(azureAdConfiguration, policies);
             }
-            
+
+            if (_configuration["EnvironmentName"] != "DEV")
+            {
+                services.AddHealthChecks()
+                    .AddDbContextCheck<LearnerNotificationsDataContext>();
+            }
+
+            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetNotificationByIdQueryHandler>());
+
+            services.AddDatabaseRegistration(_configuration, _configuration["EnvironmentName"]);
+
             services
                 .AddMvc(o =>
                 {
@@ -126,6 +145,7 @@ namespace SFA.DAS.LearnerNotifications.Api
 
             if (!_configuration["EnvironmentName"].Equals("DEV", StringComparison.CurrentCultureIgnoreCase))
             {
+                app.UseHealthChecks();
             }
 
             app.UseRouting();
