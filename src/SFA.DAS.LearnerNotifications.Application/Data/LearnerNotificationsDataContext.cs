@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using SFA.DAS.LearnerNotifications.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,9 +9,7 @@ namespace SFA.DAS.LearnerNotifications.Application.Data
 {
     public interface ILearnerNotificationsDataContext
     {
-        DbSet<Models.Notification> Notifications { get; set; }
-        int SaveChanges();
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task SaveNotification(Models.Notification notification);
     }
 
     public class LearnerNotificationsDataContext : DbContext, ILearnerNotificationsDataContext
@@ -41,6 +40,12 @@ namespace SFA.DAS.LearnerNotifications.Application.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.HasDefaultSchema("dbo");
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(LearnerNotificationsDataContext).Assembly);
+        }
+
+        public async Task SaveNotification(Notification notification)
+        {
+            await Notifications.AddAsync(notification);
+            await SaveChangesAsync();
         }
     }
 }
