@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotification
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Application", "SFA.DAS.LearnerNotifications.Application\SFA.DAS.LearnerNotifications.Application.csproj", "{E06A041E-010A-4689-BF03-A1714E8DE90B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Tests.Unit", "SFA.DAS.LearnerNotifications.Tests.Unit\SFA.DAS.LearnerNotifications.Tests.Unit.csproj", "{E5001D4C-BE03-4D21-A0C1-1750176CC983}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Application.Tests.Unit", "SFA.DAS.LearnerNotifications.Application.Tests.Unit\SFA.DAS.LearnerNotifications.Application.Tests.Unit.csproj", "{1B2CBF57-132C-47B1-9965-4D2F938BEC8E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,17 +51,17 @@ Global
 		{E06A041E-010A-4689-BF03-A1714E8DE90B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E06A041E-010A-4689-BF03-A1714E8DE90B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E06A041E-010A-4689-BF03-A1714E8DE90B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E5001D4C-BE03-4D21-A0C1-1750176CC983}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E5001D4C-BE03-4D21-A0C1-1750176CC983}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E5001D4C-BE03-4D21-A0C1-1750176CC983}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E5001D4C-BE03-4D21-A0C1-1750176CC983}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B2CBF57-132C-47B1-9965-4D2F938BEC8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B2CBF57-132C-47B1-9965-4D2F938BEC8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B2CBF57-132C-47B1-9965-4D2F938BEC8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B2CBF57-132C-47B1-9965-4D2F938BEC8E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{4CFE7142-BCE2-4270-8719-8C2249435B1E} = {336693DC-54CB-4328-97CC-523BF912C562}
-		{E5001D4C-BE03-4D21-A0C1-1750176CC983} = {336693DC-54CB-4328-97CC-523BF912C562}
+		{1B2CBF57-132C-47B1-9965-4D2F938BEC8E} = {336693DC-54CB-4328-97CC-523BF912C562}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2696654-8E1B-47D0-8283-6D38B7D18F98}

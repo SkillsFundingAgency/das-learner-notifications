@@ -3,7 +3,7 @@ using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using NServiceBus.Transport.AzureServiceBus.AdvancedExtensibility;
 
-namespace SFA.DAS.LearnerNotifications.LearnerNotificationService;
+namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.Functions;
 
 public class HandleSendNotificaiton
 {
