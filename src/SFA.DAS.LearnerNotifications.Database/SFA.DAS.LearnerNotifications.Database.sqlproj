@@ -63,6 +63,7 @@
     <Build Include="Tables\Notification.sql" />
     <Build Include="Tables\StatusHistory.sql" />
     <Build Include="Tables\NotificationStatusType.sql" />
+    <Build Include="Tables\Urgency.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="zScript.PostDeployment.sql" />

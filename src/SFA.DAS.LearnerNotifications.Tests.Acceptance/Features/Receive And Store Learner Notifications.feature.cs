@@ -110,14 +110,14 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.Features
         }
         
         [global::NUnit.Framework.TestAttribute()]
-        [global::NUnit.Framework.DescriptionAttribute("Receives a notification and stores it so that a learner van view it in the future" +
+        [global::NUnit.Framework.DescriptionAttribute("Receives a notification and stores it so that a learner can view it in the future" +
             "")]
-        public async global::System.Threading.Tasks.Task ReceivesANotificationAndStoresItSoThatALearnerVanViewItInTheFuture()
+        public async global::System.Threading.Tasks.Task ReceivesANotificationAndStoresItSoThatALearnerCanViewItInTheFuture()
         {
             string[] tagsOfScenario = ((string[])(null));
             global::System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new global::System.Collections.Specialized.OrderedDictionary();
             string pickleIndex = "0";
-            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Receives a notification and stores it so that a learner van view it in the future" +
+            global::Reqnroll.ScenarioInfo scenarioInfo = new global::Reqnroll.ScenarioInfo("Receives a notification and stores it so that a learner can view it in the future" +
                     "", null, tagsOfScenario, argumentsOfScenario, featureTags, pickleIndex);
             string[] tagsOfRule = ((string[])(null));
             global::Reqnroll.RuleInfo ruleInfo = null;

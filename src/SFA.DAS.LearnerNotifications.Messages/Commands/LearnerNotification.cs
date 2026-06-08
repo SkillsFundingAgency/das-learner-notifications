@@ -1,6 +1,6 @@
 ﻿namespace SFA.DAS.LearnerNotifications.Messages.Commands
 {
-    public class LearnerNotification
+    public class SendNotification
     {
         public Guid CorrelationId { get; set; }
         public Guid LearnerAccountId { get; set; }
@@ -10,5 +10,6 @@
         public string LinkUrl { get; set; }
         public DateTime NotificationTime { get; set; }
         public DateTime TimeToExpire { get; set; }
+        public Urgency Urgency { get; set; }
     }
 }

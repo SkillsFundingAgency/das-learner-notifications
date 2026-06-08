@@ -8,8 +8,9 @@
     LinkUrl [nvarchar](max) NULL,
     [StatusId] [tinyint] NOT NULL Constraint [FK_Notification_NotificationStatus] Foreign Key References [dbo].[NotificationStatusType]([Id]),
     [NotificationTime] [datetime2] NOT NULL,
-    [TimeToExpire] [datetime2] NOT NULL,
+    [TimeToExpire] [datetime2] NOT NULL CONSTRAINT [DF_Notification_TimeToExpire] DEFAULT (dateadd(month, 3, getdate())),
     [TimeReceived] [datetime2] NOT NULL,
+    [UrgencyId] [tinyint] NULL CONSTRAINT [FK_Notification_Urgency] FOREIGN KEY REFERENCES [dbo].[Urgency]([Id])
 ) ON [PRIMARY]
 GO
 
