@@ -64,6 +64,7 @@
     <Build Include="Tables\Notification.sql" />
     <Build Include="Tables\StatusHistory.sql" />
     <Build Include="Tables\Status.sql" />
+    <Build Include="Tables\Urgency.sql" />    
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Data\SampleData.sql" />

@@ -24,6 +24,7 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
             Assert.That(notification.TimeToExpire, Is.Null);
             Assert.That(notification.TimeReceived, Is.Null);
             Assert.That(notification.Link, Is.Null);
+            Assert.That(notification.UrgencyId, Is.Null);
         }
 
         [Test]
@@ -47,6 +48,7 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
             notification.TimeToExpire = now.AddDays(7);
             notification.TimeReceived = now;
             notification.Link = "https://example.com";
+            notification.UrgencyId = 2;
 
             // Assert
             Assert.That(notification.NotificationId, Is.EqualTo(123));
@@ -60,6 +62,7 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
             Assert.That(notification.TimeToExpire, Is.EqualTo(now.AddDays(7)));
             Assert.That(notification.TimeReceived, Is.EqualTo(now));
             Assert.That(notification.Link, Is.EqualTo("https://example.com"));
+            Assert.That(notification.UrgencyId, Is.EqualTo(2));
         }
 
         [Test]
@@ -77,7 +80,8 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
                 NotificationTime = DateTime.UtcNow,
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
-                Link = "https://example.com"
+                Link = "https://example.com",
+                UrgencyId = 1
             };
 
             // Act
@@ -91,6 +95,7 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
             notification.TimeToExpire = null;
             notification.TimeReceived = null;
             notification.Link = null;
+            notification.UrgencyId = null;
 
             // Assert
             Assert.That(notification.CorrelationId, Is.Null);
@@ -103,6 +108,7 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
             Assert.That(notification.TimeToExpire, Is.Null);
             Assert.That(notification.TimeReceived, Is.Null);
             Assert.That(notification.Link, Is.Null);
+            Assert.That(notification.UrgencyId, Is.Null);
         }
 
         [Test]
@@ -274,6 +280,117 @@ namespace SFA.DAS.LearnerNotifications.Domain.UnitTests
 
             status.Id = 128;
             Assert.That(status.Id, Is.EqualTo(128));
+        }
+
+        // ==================== New Urgency Tests ====================
+
+        [Test]
+        public void Urgency_DefaultValues_AreCorrect()
+        {
+            // Arrange & Act
+            var urgency = new Urgency();
+
+            // Assert
+            Assert.That(urgency.Id, Is.EqualTo(0));
+            Assert.That(urgency.Description, Is.Null);
+        }
+
+        [Test]
+        public void Urgency_Properties_CanBeSetAndRetrieved()
+        {
+            // Arrange
+            var urgency = new Urgency();
+
+            // Act
+            urgency.Id = 1;
+            urgency.Description = "Medium";
+
+            // Assert
+            Assert.That(urgency.Id, Is.EqualTo(1));
+            Assert.That(urgency.Description, Is.EqualTo("Medium"));
+        }
+
+        [Test]
+        public void Urgency_Properties_CanBeSetToDifferentValues()
+        {
+            // Arrange
+            var low = new Urgency();
+            var medium = new Urgency();
+            var high = new Urgency();
+
+            // Act
+            low.Id = 0;
+            low.Description = "Low";
+
+            medium.Id = 1;
+            medium.Description = "Medium";
+
+            high.Id = 2;
+            high.Description = "High";
+
+            // Assert
+            Assert.That(low.Id, Is.EqualTo(0));
+            Assert.That(low.Description, Is.EqualTo("Low"));
+
+            Assert.That(medium.Id, Is.EqualTo(1));
+            Assert.That(medium.Description, Is.EqualTo("Medium"));
+
+            Assert.That(high.Id, Is.EqualTo(2));
+            Assert.That(high.Description, Is.EqualTo("High"));
+        }
+
+        [Test]
+        public void Urgency_Description_CanBeLongString()
+        {
+            // Arrange
+            var urgency = new Urgency();
+            var longDescription = "This urgency level indicates a very high priority requiring immediate action";
+
+            // Act
+            urgency.Id = 10;
+            urgency.Description = longDescription;
+
+            // Assert
+            Assert.That(urgency.Id, Is.EqualTo(10));
+            Assert.That(urgency.Description, Is.EqualTo(longDescription));
+            Assert.That(urgency.Description.Length, Is.GreaterThan(30));
+        }
+
+        [Test]
+        public void Urgency_Description_CanBeEmptyString()
+        {
+            // Arrange
+            var urgency = new Urgency();
+
+            // Act
+            urgency.Id = 99;
+            urgency.Description = string.Empty;
+
+            // Assert
+            Assert.That(urgency.Id, Is.EqualTo(99));
+            Assert.That(urgency.Description, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public void Urgency_AllPossibleByteValues_CanBeSet()
+        {
+            // Arrange & Act
+            var urgency = new Urgency();
+
+            // Test minimum byte value
+            urgency.Id = 0;
+            Assert.That(urgency.Id, Is.EqualTo(0));
+
+            // Test maximum byte value
+            urgency.Id = 255;
+            Assert.That(urgency.Id, Is.EqualTo(255));
+
+            // Test some values in between
+            urgency.Id = 10;
+            Assert.That(urgency.Id, Is.EqualTo(10));
+
+            urgency.Id = 128;
+            Assert.That(urgency.Id, Is.EqualTo(128));
         }
     }
 }

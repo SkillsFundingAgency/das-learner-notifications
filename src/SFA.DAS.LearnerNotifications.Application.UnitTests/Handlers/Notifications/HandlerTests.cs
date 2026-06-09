@@ -598,7 +598,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = timeToExpire,
                 TimeReceived = timeReceived,
                 Link = "/account/settings",
-                Urgency = 1
+                Urgency = 2  // Medium
             };
 
             // Act
@@ -638,7 +638,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(7),
                 TimeReceived = DateTime.UtcNow,
                 Link = null,
-                Urgency = 0
+                Urgency = 1  // Low
             };
 
             // Act
@@ -670,7 +670,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow.AddHours(-2),
                 Link = "/first",
-                Urgency = 1
+                Urgency = 2  // Medium
             };
 
             var command2 = new CreateNotificationCommand
@@ -685,7 +685,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(2),
                 TimeReceived = DateTime.UtcNow.AddHours(-1),
                 Link = "/second",
-                Urgency = 2
+                Urgency = 3  // High
             };
 
             // Act
@@ -720,7 +720,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/learner1",
-                Urgency = 1
+                Urgency = 2  // Medium
             };
 
             var command2 = new CreateNotificationCommand
@@ -735,7 +735,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/learner2",
-                Urgency = 2
+                Urgency = 3  // High
             };
 
             // Act
@@ -771,7 +771,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/unread",
-                Urgency = 0
+                Urgency = 1  // Low
             };
 
             var commandAcknowledged = new CreateNotificationCommand
@@ -786,7 +786,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/acknowledged",
-                Urgency = 1
+                Urgency = 2  // Medium
             };
 
             // Act
@@ -818,7 +818,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(7),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/low",
-                Urgency = 0
+                Urgency = 1  // Low
             };
 
             var commandHigh = new CreateNotificationCommand
@@ -833,7 +833,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 TimeToExpire = DateTime.UtcNow.AddDays(1),
                 TimeReceived = DateTime.UtcNow,
                 Link = "/high",
-                Urgency = 2
+                Urgency = 3  // High
             };
 
             // Act

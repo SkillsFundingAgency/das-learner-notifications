@@ -6,6 +6,14 @@ VALUES
     (4, 'Expired');
 GO
 
+-- Insert urgency values (1=Low, 2=Medium, 3=High)
+INSERT INTO [dbo].[Urgency] ([Id], [Description])
+VALUES 
+    (1, 'Low'),
+    (2, 'Medium'),
+    (3, 'High');
+GO
+
 SET IDENTITY_INSERT [dbo].[Notification] ON;
 GO
 
@@ -34,7 +42,7 @@ VALUES
   DATEADD(day, 30, GETUTCDATE()), -- Expires in 30 days
   DATEADD(day, -2, GETUTCDATE()),
   '/system/maintenance',
-  1), -- Medium urgency
+  2), -- Medium urgency
 
 -- Notification 2: Training Reminder
 (1002, NEWID(), 'A3B2C1D4-E5F6-7890-ABCD-EF1234567890', 'TrainingReminder', 
@@ -45,7 +53,7 @@ VALUES
   DATEADD(day, 7, GETUTCDATE()), -- Expires in 7 days
   DATEADD(day, -5, GETUTCDATE()),
   '/training/mandatory',
-  2), -- High urgency
+  3), -- High urgency
 
 -- Notification 3: Apprenticeship Update
 (1003, NEWID(), 'B4C3D2E1-F6E5-8901-BCDE-FA2345678901', 'ApprenticeshipUpdate', 
@@ -56,7 +64,7 @@ VALUES
   DATEADD(day, 14, GETUTCDATE()), -- Expires in 14 days
   DATEADD(hour, -1, GETUTCDATE()),
   '/learning/module-3',
-  0), -- Low urgency
+  1), -- Low urgency
 
 -- Notification 4: Assessment Notification
 (1004, NEWID(), 'B4C3D2E1-F6E5-8901-BCDE-FA2345678901', 'Assessment', 
@@ -67,7 +75,7 @@ VALUES
   DATEADD(day, -1, GETUTCDATE()), -- Expired yesterday
   DATEADD(day, -12, GETUTCDATE()),
   '/assessments/upcoming',
-  1), -- Medium urgency
+  2), -- Medium urgency
 
 -- Notification 5: Feedback Request
 (1005, NEWID(), 'C5D4E3F2-1728-9012-CDEF-AB3456789012', 'Feedback', 
@@ -78,7 +86,7 @@ VALUES
   DATEADD(day, 5, GETUTCDATE()), -- Expires in 5 days
   DATEADD(day, -2, GETUTCDATE()),
   '/feedback/session-123',
-  0), -- Low urgency
+  1), -- Low urgency
 
 -- Notification 6: Account Verification
 (1006, NEWID(), 'C5D4E3F2-1728-9012-CDEF-AB3456789012', 'Account', 
@@ -89,7 +97,7 @@ VALUES
   DATEADD(day, 3, GETUTCDATE()), -- Expires in 3 days
   DATEADD(minute, -30, GETUTCDATE()),
   '/account/verify',
-  2), -- High urgency
+  3), -- High urgency
 
 -- Notification 7: Notification with NULL Link
 (1007, NEWID(), 'D6E5F4A3-2839-0123-DE4A-BC4567890123', 'SystemAlert', 
