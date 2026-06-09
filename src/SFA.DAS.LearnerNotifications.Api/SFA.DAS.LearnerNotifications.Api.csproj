@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ProjectGuid>52499A9C-BC56-43C5-B538-F8CF03DA999C</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="DataFiles\**" />
+        <Content Remove="DataFiles\**" />
+        <EmbeddedResource Remove="DataFiles\**" />
+        <None Remove="DataFiles\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AspNetCore.HealthChecks.SqlServer" Version="9.0.0" />
+        <PackageReference Include="Azure.Monitor.OpenTelemetry.AspNetCore" Version="1.4.0" />
+        <PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.6.0" /> 
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.0" />
+        <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.0.0" />
+        <PackageReference Include="SFA.DAS.Api.Common" Version="17.1.88" />
+        <PackageReference Include="SFA.DAS.Configuration.AzureTableStorage" Version="3.0.84" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
+        <PackageReference Include="MediatR" Version="12.4.1" />
+        <PackageReference Include="Azure.Identity" Version="1.17.1" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.80.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Data\SFA.DAS.LearnerNotifications.Data.csproj" />
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Domain\SFA.DAS.LearnerNotifications.Domain.csproj" />
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Application\SFA.DAS.LearnerNotifications.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="appsettings.json">
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </Content>
+        <Content Update="appsettings.Development.json">
+            <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="DataFiles\" />
+    </ItemGroup>
+</Project>

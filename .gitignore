@@ -355,3 +355,4 @@ MigrationBackup/
 *.v3.ncrunchsolution
 *.v3.ncrunchproject
 appSettings.development.json
+.DS_Store
