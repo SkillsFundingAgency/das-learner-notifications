@@ -34,7 +34,8 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
                 Body = "Test Body",
                 LinkUrl = "http://test.com",
                 NotificationTime = DateTime.UtcNow,
-                TimeToExpire = DateTime.UtcNow.AddDays(7)
+                TimeToExpire = DateTime.UtcNow.AddDays(7),
+                Urgency =  Urgency.Low
             };
         }
 

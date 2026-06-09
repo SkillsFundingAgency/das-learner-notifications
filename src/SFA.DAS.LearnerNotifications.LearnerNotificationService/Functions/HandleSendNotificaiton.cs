@@ -19,15 +19,23 @@ public class HandleSendNotificaiton
 
     [Function(nameof(HandleSendNotificaiton))]
     public async Task Run(
-        [ServiceBusTrigger("%LearnerNotificationsEndpoint%", Connection = "ServiceBusConnectionString")]
+        [ServiceBusTrigger("%EndpointName%", Connection = "ServiceBusConnectionString")]
         ServiceBusReceivedMessage message,
         ServiceBusMessageActions messageActions)
     { 
-        logger.LogInformation($"Received message with ID: {message.MessageId}, Content: {message.Body}");
-        //deserialise message to Commands.SendLearnerNotification
-        var notification = message.Body.ToObjectFromJson<Messages.Commands.SendNotification>();
-        logger.LogInformation($"Notificaiotn: Heading: {notification.Heading}, Body: {notification.Body}, LinkUrl: {notification.LinkUrl}, Category: {notification.Category}, LearnerAccountId: {notification.LearnerAccountId}, CorrelationId: {notification.CorrelationId}, NotificationTime: {notification.NotificationTime}, TimeToExpire: {notification.TimeToExpire}, Urgency: {notification.Urgency}");
-        //User application.notificationprocessor to process the message
-        await processor.Process(notification);
+        logger.LogTrace($"Received message with ID: {message.MessageId}, Content: {message.Body}");
+        try 
+        {
+            //deserialise message to Commands.SendLearnerNotification
+            var notification = message.Body.ToObjectFromJson<Messages.Commands.SendNotification>();
+            logger.LogInformation($"Notification: Heading: {notification.Heading}, Body: {notification.Body}, LinkUrl: {notification.LinkUrl}, Category: {notification.Category}, LearnerAccountId: {notification.LearnerAccountId}, CorrelationId: {notification.CorrelationId}, NotificationTime: {notification.NotificationTime}, TimeToExpire: {notification.TimeToExpire}, Urgency: {notification.Urgency}");
+            //User application.notificationprocessor to process the message
+            await processor.Process(notification);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, $"Error processing message with ID: {message.MessageId}");
+            throw;
+        }
     }
 }

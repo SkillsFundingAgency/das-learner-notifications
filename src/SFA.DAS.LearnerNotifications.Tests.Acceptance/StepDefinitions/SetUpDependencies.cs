@@ -10,8 +10,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
         [ScenarioDependencies]
         public static IServiceCollection CreateServices()
         {
-            var services = new ServiceCollection();
-            //var endpointConfig = CreateEndpoint();
+            var services = new ServiceCollection();            
             services.AddScoped<TestingContext>();
             services.AddScoped<MessageSession>();
             services.AddScoped<TestSessionDataContext>(options =>
@@ -19,25 +18,5 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
 
             return services;
         }
-
-        //public static EndpointConfiguration CreateEndpoint(bool sendOnly = false)
-        //{
-        //    var endpointConfig = new EndpointConfiguration("sfa-das-learnernotifications-specs");
-        //    var conventions = endpointConfig.Conventions();
-        //    conventions.DefiningMessagesAs(type => type.IsMessage());
-        //    endpointConfig.UseSerialization<SystemJsonSerializer>();
-        //    //var storageConnectionString = TestRunBindings.Config["ConnectionStrings:StorageConnectionString"];
-        //    //endpointConfig.UsePersistence<AzureTablePersistence>().ConnectionString(storageConnectionString);
-        //    var connectionString = TestRunBindings.Config["ConnectionStrings:ServiceBusConnectionString"];
-        //    Console.WriteLine($"Config: ConnectionString: {connectionString}");
-        //    var transport = new AzureServiceBusTransport(connectionString, TopicTopology.Default)
-        //    {
-        //        UseWebSockets = TestRunBindings.Config["UseWebSockets"]?.ToLower() == "true"
-        //    };
-
-        //    endpointConfig.UseTransport(transport);
-        //    endpointConfig.EnableInstallers();
-        //    return endpointConfig;
-        //}
     }
 }

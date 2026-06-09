@@ -9,7 +9,7 @@
         public string Body { get; set; }
         public string LinkUrl { get; set; }
         public DateTime NotificationTime { get; set; }
-        public DateTime TimeToExpire { get; set; }
-        public Urgency Urgency { get; set; }
+        public DateTime TimeToExpire { get; set; } = DateTime.UtcNow.AddMonths(3);
+        public Urgency Urgency { get; set; } = Urgency.Low;
     }
 }

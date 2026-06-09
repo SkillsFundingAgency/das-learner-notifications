@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using NServiceBus; 
 using OpenTelemetry;
 using SFA.DAS.LearnerNotifications.Application.Data;
+using SFA.DAS.LearnerNotifications.Application.Infrastructure;
 using SFA.DAS.LearnerNotifications.Application.Services;
 
 
@@ -21,8 +22,11 @@ builder.Configuration.AddJsonFile("local.settings.json", optional: true, reloadO
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<ILearnerNotificationsDataContext, LearnerNotificationsDataContext>(options => { 
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnectionString"), sqlOptions => sqlOptions.CommandTimeout(600));
+    options.UseSqlServer(builder.Configuration["DatabaseConnectionString"], sqlOptions => sqlOptions.CommandTimeout(600));
 });
+
+//TODO: The functions runtime starts prior to starting this service so there is a risk of ASB bindings trying to receive messages before the queues are created.  This should be treated as tech debt and resolved by the new AS messaging libraries when they are ready.
+builder.Services.AddHostedService<MessagingAdministration>();
 
 
 builder.Services.AddScoped<INotificationProcessor, NotificationProcessor>();

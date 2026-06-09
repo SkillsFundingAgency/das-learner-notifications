@@ -14,7 +14,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
                 TransportType = TestRunBindings.Config["UseWebSockets"]?.ToLower() == "true" ? ServiceBusTransportType.AmqpWebSockets : ServiceBusTransportType.AmqpTcp
             };
             serviceBusClient = new ServiceBusClient(TestRunBindings.Config["ConnectionStrings:ServiceBusConnectionString"], serviceBusOptions);
-            serviceBusSender = serviceBusClient.CreateSender(TestRunBindings.Config["LearnerNotificationsEndpoint"]);
+            serviceBusSender = serviceBusClient.CreateSender(TestRunBindings.Config["EndpointName"]);
         }
 
         public async Task Send<T>(T message)

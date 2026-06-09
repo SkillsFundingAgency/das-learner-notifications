@@ -1,4 +1,5 @@
-﻿using SFA.DAS.LearnerNotifications.Application.Data;
+﻿using Microsoft.Extensions.Logging;
+using SFA.DAS.LearnerNotifications.Application.Data;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
 using System;
 using System.Collections.Generic;
@@ -15,28 +16,40 @@ namespace SFA.DAS.LearnerNotifications.Application.Services
     public class NotificationProcessor : INotificationProcessor
     {
         private readonly ILearnerNotificationsDataContext dataContext;
+        private readonly ILogger<ILearnerNotificationsDataContext> logger;
 
-        public NotificationProcessor(ILearnerNotificationsDataContext dataContext)
+        public NotificationProcessor(ILearnerNotificationsDataContext dataContext, ILogger<ILearnerNotificationsDataContext> logger)
         {
             this.dataContext = dataContext ?? throw new ArgumentNullException(nameof(dataContext));
+            this.logger = logger;
         }
 
         public async Task Process(SendNotification notification)
         {
-            var model = new Models.Notification
+            logger.LogDebug($"Processing the notification with CorrelationId: {notification.CorrelationId}, heading: {notification.Heading}");
+            try
             {
-                CorrelationId = notification.CorrelationId,
-                LearnerAccountId = notification.LearnerAccountId,
-                Category = notification.Category,
-                Heading = notification.Heading,
-                Body = notification.Body,
-                LinkUrl = notification.LinkUrl,
-                NotificationTime = notification.NotificationTime,
-                TimeToExpire = notification.TimeToExpire,
-                Urgency = Convert(notification.Urgency)
-            };
+                var model = new Models.Notification
+                {
+                    CorrelationId = notification.CorrelationId,
+                    LearnerAccountId = notification.LearnerAccountId,
+                    Category = notification.Category,
+                    Heading = notification.Heading,
+                    Body = notification.Body,
+                    LinkUrl = notification.LinkUrl,
+                    NotificationTime = notification.NotificationTime,
+                    TimeToExpire = notification.TimeToExpire,
+                    Urgency = Convert(notification.Urgency)
+                };
 
-            await dataContext.SaveNotification(model);
+                await dataContext.SaveNotification(model);
+                logger.LogInformation($"Finished processing the notification with CorrelationId: {notification.CorrelationId}, heading: {notification.Heading}");
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Error occurred while processing notification. Error: {ex.Message}");
+                throw;
+            }
         }
 
         private Models.NotificationUrgency Convert(Urgency urgency)
