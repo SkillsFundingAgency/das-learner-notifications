@@ -39,7 +39,8 @@ namespace SFA.DAS.LearnerNotifications.Application.Services
                     LinkUrl = notification.LinkUrl,
                     NotificationTime = notification.NotificationTime,
                     TimeToExpire = notification.TimeToExpire,
-                    Urgency = Convert(notification.Urgency)
+                    Urgency = Convert(notification.Urgency),
+                    Status = Models.NotificationStatus.Unread,
                 };
 
                 await dataContext.SaveNotification(model);

@@ -49,5 +49,30 @@ namespace SFA.DAS.LearnerNotifications.Application.Tests.Unit
 
             )), Times.Once);
         }
+
+        [Test]
+        public async Task Stores_New_Notifications_With_Status_As_Unread()
+        {
+            var dataContextMock = fixture.Freeze<Mock<ILearnerNotificationsDataContext>>();
+            //fixture.Create<ILearnerNotificationsDataContext>();.Verify(x => x.SaveNotification(It.IsAny<Models.Notification>()));
+            var processor = fixture.Create<NotificationProcessor>();
+            var message = new Messages.Commands.SendNotification
+            {
+                CorrelationId = Guid.NewGuid(),
+                LearnerAccountId = Guid.NewGuid(),
+                Category = "TestCategory",
+                Heading = "Test Heading",
+                Body = "Test Body",
+                LinkUrl = "http://test.com",
+                NotificationTime = DateTime.UtcNow,
+                TimeToExpire = DateTime.UtcNow.AddDays(7),
+                Urgency = Messages.Commands.Urgency.Medium
+            };
+            await processor.Process(message);
+            dataContextMock.Verify(x => x.SaveNotification(It.Is<Models.Notification>(notification =>
+                notification.Status == Models.NotificationStatus.Unread
+            )), Times.Once);
+        }
+
     }
 }

@@ -13,7 +13,7 @@
         public DateTime NotificationTime { get; set; }
         public DateTime TimeToExpire { get; set;  }
         public DateTime TimeReceived { get; set; }
-        public NotificationUrgency Urgency { get; set; }
+        public NotificationUrgency? Urgency { get; set; }
 
     }
 }

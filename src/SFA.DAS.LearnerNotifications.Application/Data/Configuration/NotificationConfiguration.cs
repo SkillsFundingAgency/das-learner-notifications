@@ -20,11 +20,11 @@ namespace SFA.DAS.LearnerNotifications.Application.Data.Configuration
             builder.Property(x => x.Heading).HasColumnName(@"Heading").IsRequired();
             builder.Property(x => x.Body).HasColumnName(@"Body").IsRequired();
             builder.Property(x => x.LinkUrl).HasColumnName(@"LinkUrl").IsRequired(false);
-            builder.Property(x => x.Status).HasColumnName(@"StatusId").IsRequired();
+            builder.Property(x => x.Status).HasColumnName(@"Status").IsRequired();
             builder.Property(x => x.NotificationTime).HasColumnName(@"NotificationTime").IsRequired();
             builder.Property(x => x.TimeToExpire).HasColumnName(@"TimeToExpire");
             builder.Property(x => x.TimeReceived).HasColumnName(@"TimeReceived").IsRequired();
-            builder.Property(x => x.Urgency).HasColumnName(@"Urgency").IsRequired();
+            builder.Property(x => x.Urgency).HasColumnName(@"Urgency");
         }        
     }
 }
