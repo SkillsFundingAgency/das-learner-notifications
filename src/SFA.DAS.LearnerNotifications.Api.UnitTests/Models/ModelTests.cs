@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SFA.DAS.LearnerNotifications.Api.Controllers;
@@ -30,7 +30,8 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
                 StatusId = 1,
                 NotificationTime = notificationTime,
                 TimeToExpire = timeToExpire,
-                TimeReceived = timeReceived
+                TimeReceived = timeReceived,
+                UrgencyId = 2
             };
 
             Assert.AreEqual(1234567890L, sut.NotificationId);
@@ -43,6 +44,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
             Assert.AreEqual(notificationTime, sut.NotificationTime);
             Assert.AreEqual(timeToExpire, sut.TimeToExpire);
             Assert.AreEqual(timeReceived, sut.TimeReceived);
+            Assert.AreEqual(2, sut.UrgencyId);
         }
 
         [Test]
@@ -146,7 +148,8 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
                 StatusId = null,
                 NotificationTime = null,
                 TimeToExpire = null,
-                TimeReceived = null
+                TimeReceived = null,
+                UrgencyId = null
             };
 
             Assert.AreEqual(1, sut.NotificationId);
@@ -157,6 +160,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
             Assert.IsNull(sut.NotificationTime);
             Assert.IsNull(sut.TimeToExpire);
             Assert.IsNull(sut.TimeReceived);
+            Assert.IsNull(sut.UrgencyId);
         }
 
         [Test]

@@ -1,4 +1,4 @@
-﻿CREATE TABLE [dbo].[Notification](
+CREATE TABLE [dbo].[Notification](
     [NotificationId] [bigint] IDENTITY(1,1) NOT NULL,
     [CorrelationId] [uniqueidentifier] NULL,
     [LearnerAccountId] [uniqueidentifier] NULL,
@@ -9,7 +9,8 @@
     [NotificationTime] [datetime] NULL,
     [TimeToExpire] [datetime] NULL,
     [TimeReceived] [datetime] NULL,
-    [Link] [nvarchar](500) NULL
+    [Link] [nvarchar](500) NULL,
+    [UrgencyId] [tinyint] NULL
 ) ON [PRIMARY]
 GO
 

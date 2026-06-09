@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
@@ -28,11 +28,14 @@ namespace SFA.DAS.LearnerNotifications.Data.Configuration
             builder.Property(x => x.NotificationTime).HasColumnName("NotificationTime").HasColumnType("datetime");
             builder.Property(x => x.TimeToExpire).HasColumnName("TimeToExpire").HasColumnType("datetime");
             builder.Property(x => x.TimeReceived).HasColumnName("TimeReceived").HasColumnType("datetime");
+            builder.Property(x => x.Link).HasColumnName("Link").HasColumnType("nvarchar(500)").HasMaxLength(500);
+            builder.Property(x => x.UrgencyId).HasColumnName("UrgencyId").HasColumnType("tinyint");
             
             builder.HasIndex(x => x.NotificationId).IsUnique();
             builder.HasIndex(x => x.CorrelationId);
             builder.HasIndex(x => x.LearnerAccountId);
             builder.HasIndex(x => x.StatusId);
+            builder.HasIndex(x => x.UrgencyId);
             builder.HasIndex(x => x.NotificationTime);
         }
     }

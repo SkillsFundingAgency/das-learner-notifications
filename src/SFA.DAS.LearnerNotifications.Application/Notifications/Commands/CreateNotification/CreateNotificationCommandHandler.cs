@@ -1,4 +1,4 @@
-﻿using System.Threading;
+using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +28,8 @@ namespace SFA.DAS.LearnerNotifications.Application.Commands
                 NotificationTime = request.NotificationTime,
                 TimeToExpire = request.TimeToExpire,
                 TimeReceived = request.TimeReceived,
-                Link = request.Link
-                // Urgency = request.Urgency
+                Link = request.Link,
+                UrgencyId = request.Urgency
             };
 
             await _context.Notifications.AddAsync(notification, cancellationToken);
