@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
-namespace SFA.DAS.LearnerNotifications.LearnerNotificationService;
+namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.Functions;
 
 public class SendLearnerNotification
 {

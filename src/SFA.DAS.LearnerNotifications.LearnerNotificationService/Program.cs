@@ -1,14 +1,15 @@
 using Azure.Monitor.OpenTelemetry.Exporter;
-using NServiceBus; 
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Builder;
 using Microsoft.Azure.Functions.Worker.OpenTelemetry;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NServiceBus; 
 using OpenTelemetry;
 using SFA.DAS.LearnerNotifications.Application.Data;
-using Microsoft.EntityFrameworkCore;
+using SFA.DAS.LearnerNotifications.Application.Services;
 
 
 //[assembly: NServiceBusTriggerFunction(endpointName: "sfa-das-learnernotifications", Connection = "ServiceBusConnectionString")]
