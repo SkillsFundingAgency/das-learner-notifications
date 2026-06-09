@@ -1,5 +1,4 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.6.11819.183
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -29,6 +28,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Messages", "SFA.DAS.LearnerNotifications.Messages\SFA.DAS.LearnerNotifications.Messages.csproj", "{9647AC16-1111-4D1C-8284-7D77DF28C21D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Api.UnitTests", "SFA.DAS.LearnerNotifications.Api.UnitTests\SFA.DAS.LearnerNotifications.Api.UnitTests.csproj", "{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Api.ReqnrollTests", "SFA.DAS.LearnerNotifications.Api.ReqnrollTests\SFA.DAS.LearnerNotifications.Api.ReqnrollTests.csproj", "{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -84,9 +85,12 @@ Global
 		{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6CED102-D193-49D2-AB64-488C13E21DFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D6CED102-D193-49D2-AB64-488C13E21DFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6CED102-D193-49D2-AB64-488C13E21DFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6CED102-D193-49D2-AB64-488C13E21DFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +102,7 @@ Global
 		{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B6} = {2D5BA2D4-5473-4661-B8DA-16F7C31BD5BD}
 		{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B7} = {2D5BA2D4-5473-4661-B8DA-16F7C31BD5BD}
 		{D6CED102-D193-49D2-AB64-488C13E21DFA} = {2D5BA2D4-5473-4661-B8DA-16F7C31BD5BD}
+		{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C} = {2D5BA2D4-5473-4661-B8DA-16F7C31BD5BD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2696654-8E1B-47D0-8283-6D38B7D18F98}

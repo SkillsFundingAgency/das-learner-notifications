@@ -1,9 +1,8 @@
 using System;
-using MediatR;
 
 namespace SFA.DAS.LearnerNotifications.Application.Commands
 {
-    public class CreateNotificationCommand : IRequest
+    public class CreateNotificationCommand
     {
         public Guid CorrelationId { get; set; }
         public Guid LearnerAccountId { get; set; }

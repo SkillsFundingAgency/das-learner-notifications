@@ -6,34 +6,43 @@ using AutoFixture;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 using SFA.DAS.LearnerNotifications.Application.Commands;
+using SFA.DAS.LearnerNotifications.Application.Models;
+using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
 using SFA.DAS.Testing.AutoFixture;
-using SFA.DAS.LearnerNotifications.Application.Models;
-using Status = SFA.DAS.LearnerNotifications.Application.Models.Status;
+using StatusEnum = SFA.DAS.LearnerNotifications.Application.Models.Status;
 
 namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
 {
     public class HandlerTests : LearnerNotificationsDbContextFixture
     {
         private readonly Fixture _fixture = new();
+        private NotificationService _service = null!;
+
+        [SetUp]
+        public void Setup()
+        {
+            _service = new NotificationService(DbContext);
+        }
+
+        // ==================== GetNotificationsByAccount Tests ====================
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_ReturnsNotifications_Test()
+        public async Task GetNotificationsByAccount_ReturnsNotifications_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             await PopulateDbContextWithNotifications(accountId);
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -42,19 +51,17 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_ReturnsEmpty_WhenNoNotifications_Test()
+        public async Task GetNotificationsByAccount_ReturnsEmpty_WhenNoNotifications_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
-
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -62,7 +69,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_OrdersByNotificationTimeDescending_Default_Test()
+        public async Task GetNotificationsByAccount_OrdersByNotificationTimeDescending_Default_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -84,7 +91,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             await DbContext.Notifications.AddRangeAsync(notification1, notification2, notification3);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
@@ -92,7 +98,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(3));
@@ -102,7 +108,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_OrdersByNotificationTimeAscending_Test()
+        public async Task GetNotificationsByAccount_OrdersByNotificationTimeAscending_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -124,7 +130,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             await DbContext.Notifications.AddRangeAsync(notification1, notification2, notification3);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
@@ -132,7 +137,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(3));
@@ -142,7 +147,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_FiltersByDateFrom_Test()
+        public async Task GetNotificationsByAccount_FiltersByDateFrom_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -162,7 +167,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             await DbContext.Notifications.AddRangeAsync(older, onCutoff, newer);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
@@ -170,7 +174,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(2));
@@ -178,123 +182,116 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_FiltersBySingleStatus_Test()
+        public async Task GetNotificationsByAccount_FiltersBySingleStatus_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var unread = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Unread)
+                .With(n => n.StatusId, (byte)StatusEnum.Unread)
                 .Create();
             var acknowledged = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Acknowledged)
+                .With(n => n.StatusId, (byte)StatusEnum.Acknowledged)
                 .Create();
             var hidden = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Hidden)
+                .With(n => n.StatusId, (byte)StatusEnum.Hidden)
                 .Create();
             await DbContext.Notifications.AddRangeAsync(unread, acknowledged, hidden);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
-                Statuses = new System.Collections.Generic.List<Status> { Status.Acknowledged }
+                Statuses = new System.Collections.Generic.List<StatusEnum> { StatusEnum.Acknowledged }
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(1));
-            Assert.That(result.Notifications[0].StatusId, Is.EqualTo((byte)Status.Acknowledged));
+            Assert.That(result.Notifications[0].StatusId, Is.EqualTo((byte)StatusEnum.Acknowledged));
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_FiltersByMultipleStatuses_Test()
+        public async Task GetNotificationsByAccount_FiltersByMultipleStatuses_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var unread = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Unread)
+                .With(n => n.StatusId, (byte)StatusEnum.Unread)
                 .Create();
             var acknowledged = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Acknowledged)
+                .With(n => n.StatusId, (byte)StatusEnum.Acknowledged)
                 .Create();
             var hidden = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Hidden)
+                .With(n => n.StatusId, (byte)StatusEnum.Hidden)
                 .Create();
             var expired = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Expired)
+                .With(n => n.StatusId, (byte)StatusEnum.Expired)
                 .Create();
             await DbContext.Notifications.AddRangeAsync(unread, acknowledged, hidden, expired);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
-                Statuses = new System.Collections.Generic.List<Status> { Status.Unread, Status.Expired }
+                Statuses = new System.Collections.Generic.List<StatusEnum> { StatusEnum.Unread, StatusEnum.Expired }
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(2));
-            Assert.That(result.Notifications.All(n => n.StatusId == (byte)Status.Unread || n.StatusId == (byte)Status.Expired), Is.True);
+            Assert.That(result.Notifications.All(n => n.StatusId == (byte)StatusEnum.Unread || n.StatusId == (byte)StatusEnum.Expired), Is.True);
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_FiltersByStatusAndDateFromAndOrder_Test()
+        public async Task GetNotificationsByAccount_FiltersByStatusAndDateFromAndOrder_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var cutoff = new DateTime(2023, 5, 1);
-            // Unread before cutoff
             var unreadBefore = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Unread)
+                .With(n => n.StatusId, (byte)StatusEnum.Unread)
                 .With(n => n.NotificationTime, new DateTime(2023, 4, 25))
                 .Create();
-            // Unread after cutoff, earlier time
             var unreadAfterEarlier = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Unread)
+                .With(n => n.StatusId, (byte)StatusEnum.Unread)
                 .With(n => n.NotificationTime, new DateTime(2023, 5, 10))
                 .Create();
-            // Unread after cutoff, later time
             var unreadAfterLater = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Unread)
+                .With(n => n.StatusId, (byte)StatusEnum.Unread)
                 .With(n => n.NotificationTime, new DateTime(2023, 5, 20))
                 .Create();
-            // Acknowledged after cutoff (should be excluded)
             var acknowledgedAfter = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)Status.Acknowledged)
+                .With(n => n.StatusId, (byte)StatusEnum.Acknowledged)
                 .With(n => n.NotificationTime, new DateTime(2023, 5, 15))
                 .Create();
             await DbContext.Notifications.AddRangeAsync(unreadBefore, unreadAfterEarlier, unreadAfterLater, acknowledgedAfter);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
                 DateFrom = cutoff,
-                Statuses = new System.Collections.Generic.List<Status> { Status.Unread },
+                Statuses = new System.Collections.Generic.List<StatusEnum> { StatusEnum.Unread },
                 Order = SortOrder.Ascending
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(2));
@@ -303,32 +300,30 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_WhenStatusesListEmpty_ReturnsAllNotifications_Test()
+        public async Task GetNotificationsByAccount_WhenStatusesListEmpty_ReturnsAllNotifications_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             await PopulateDbContextWithNotifications(accountId);
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
-                Statuses = new System.Collections.Generic.List<Status>()
+                Statuses = new System.Collections.Generic.List<StatusEnum>()
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(2));
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationsByAccountIdentifierQueryHandler_WhenStatusesNull_ReturnsAllNotifications_Test()
+        public async Task GetNotificationsByAccount_WhenStatusesNull_ReturnsAllNotifications_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             await PopulateDbContextWithNotifications(accountId);
-            var handler = new GetNotificationsByAccountIdentifierQueryHandler(DbContext);
             var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountId,
@@ -336,21 +331,22 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationsByAccountAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result.Notifications.Count, Is.EqualTo(2));
         }
 
+        // ==================== GetNotificationById Tests ====================
+
         [Test, MoqAutoData]
-        public async Task GetNotificationByIdQueryHandler_ReturnsNotification_Test()
+        public async Task GetNotificationById_ReturnsNotification_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var notificationId = 1L;
             await PopulateDbContextWithNotifications(accountId, notificationId);
 
-            var handler = new GetNotificationByIdQueryHandler(DbContext);
             var query = new GetNotificationByIdQuery
             {
                 AccountIdentifier = accountId,
@@ -358,7 +354,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationByIdAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -367,13 +363,12 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationByIdQueryHandler_ReturnsNull_WhenNotFound_Test()
+        public async Task GetNotificationById_ReturnsNull_WhenNotFound_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var notificationId = 999L;
 
-            var handler = new GetNotificationByIdQueryHandler(DbContext);
             var query = new GetNotificationByIdQuery
             {
                 AccountIdentifier = accountId,
@@ -381,14 +376,16 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationByIdAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Null);
         }
 
+        // ==================== GetNotificationStatus Tests ====================
+
         [Test, MoqAutoData]
-        public async Task GetNotificationStatusQueryHandler_ReturnsStatus_Test()
+        public async Task GetNotificationStatus_ReturnsStatus_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -396,7 +393,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             var statusId = (byte)2; // Acknowledged
             await PopulateDbContextWithNotificationsAndStatusHistory(accountId, notificationId, statusId);
 
-            var handler = new GetNotificationStatusQueryHandler(DbContext);
             var query = new GetNotificationStatusQuery
             {
                 AccountIdentifier = accountId,
@@ -404,7 +400,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationStatusAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -414,13 +410,12 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationStatusQueryHandler_ReturnsNull_WhenNotificationNotFound_Test()
+        public async Task GetNotificationStatus_ReturnsNull_WhenNotificationNotFound_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var notificationId = 999L;
 
-            var handler = new GetNotificationStatusQueryHandler(DbContext);
             var query = new GetNotificationStatusQuery
             {
                 AccountIdentifier = accountId,
@@ -428,14 +423,14 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationStatusAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Null);
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationStatusQueryHandler_WhenNoStatusHistory_ReturnsDefaultLastUpdated()
+        public async Task GetNotificationStatus_WhenNoStatusHistory_ReturnsDefaultLastUpdated()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -443,7 +438,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             var statusId = (byte)1; // Unread
             await PopulateDbContextWithNotifications(accountId, notificationId, statusId);
 
-            var handler = new GetNotificationStatusQueryHandler(DbContext);
             var query = new GetNotificationStatusQuery
             {
                 AccountIdentifier = accountId,
@@ -451,7 +445,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationStatusAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -461,7 +455,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotificationStatusQueryHandler_WhenStatusIdIsNull_UsesDefaultValue()
+        public async Task GetNotificationStatus_WhenStatusIdIsNull_UsesDefaultValue()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -474,7 +468,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             await DbContext.Notifications.AddAsync(notification);
             await DbContext.SaveChangesAsync();
 
-            var handler = new GetNotificationStatusQueryHandler(DbContext);
             var query = new GetNotificationStatusQuery
             {
                 AccountIdentifier = accountId,
@@ -482,7 +475,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            var result = await handler.Handle(query, CancellationToken.None);
+            var result = await _service.GetNotificationStatusAsync(query, CancellationToken.None);
 
             // Assert
             Assert.That(result, Is.Not.Null);
@@ -491,7 +484,44 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task SetNotificationStatusCommandHandler_UpdatesStatus_Test()
+        public async Task GetNotificationStatus_ReturnsCorrectNamesForAllStatuses_Test()
+        {
+            // Arrange
+            var accountId1 = Guid.NewGuid();
+            await PopulateDbContextWithNotifications(accountId1, 1L, 1);
+            var query1 = new GetNotificationStatusQuery { AccountIdentifier = accountId1, NotificationIdentifier = 1L };
+            var result1 = await _service.GetNotificationStatusAsync(query1, CancellationToken.None);
+            Assert.That(result1.StatusName, Is.EqualTo("Unread"));
+
+            var accountId2 = Guid.NewGuid();
+            await PopulateDbContextWithNotifications(accountId2, 2L, 2);
+            var query2 = new GetNotificationStatusQuery { AccountIdentifier = accountId2, NotificationIdentifier = 2L };
+            var result2 = await _service.GetNotificationStatusAsync(query2, CancellationToken.None);
+            Assert.That(result2.StatusName, Is.EqualTo("Acknowledged"));
+
+            var accountId3 = Guid.NewGuid();
+            await PopulateDbContextWithNotifications(accountId3, 3L, 3);
+            var query3 = new GetNotificationStatusQuery { AccountIdentifier = accountId3, NotificationIdentifier = 3L };
+            var result3 = await _service.GetNotificationStatusAsync(query3, CancellationToken.None);
+            Assert.That(result3.StatusName, Is.EqualTo("Hidden"));
+
+            var accountId4 = Guid.NewGuid();
+            await PopulateDbContextWithNotifications(accountId4, 4L, 4);
+            var query4 = new GetNotificationStatusQuery { AccountIdentifier = accountId4, NotificationIdentifier = 4L };
+            var result4 = await _service.GetNotificationStatusAsync(query4, CancellationToken.None);
+            Assert.That(result4.StatusName, Is.EqualTo("Expired"));
+
+            var accountId5 = Guid.NewGuid();
+            await PopulateDbContextWithNotifications(accountId5, 5L, 99);
+            var query99 = new GetNotificationStatusQuery { AccountIdentifier = accountId5, NotificationIdentifier = 5L };
+            var result99 = await _service.GetNotificationStatusAsync(query99, CancellationToken.None);
+            Assert.That(result99.StatusName, Is.EqualTo("Unread"));
+        }
+
+        // ==================== SetNotificationStatus Tests ====================
+
+        [Test, MoqAutoData]
+        public async Task SetNotificationStatus_UpdatesStatus_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
@@ -501,7 +531,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
 
             await PopulateDbContextWithNotifications(accountId, notificationId, initialStatus);
 
-            var handler = new SetNotificationStatusCommandHandler(DbContext);
             var command = new SetNotificationStatusCommand
             {
                 AccountIdentifier = accountId,
@@ -510,7 +539,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(command, CancellationToken.None);
+            await _service.SetNotificationStatusAsync(command, CancellationToken.None);
 
             // Assert
             var updatedNotification = await DbContext.Notifications
@@ -528,13 +557,12 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task SetNotificationStatusCommandHandler_DoesNothing_WhenNotificationNotFound_Test()
+        public async Task SetNotificationStatus_DoesNothing_WhenNotificationNotFound_Test()
         {
             // Arrange
             var accountId = Guid.NewGuid();
             var notificationId = 999L;
 
-            var handler = new SetNotificationStatusCommandHandler(DbContext);
             var command = new SetNotificationStatusCommand
             {
                 AccountIdentifier = accountId,
@@ -543,48 +571,13 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act & Assert
-            Assert.DoesNotThrowAsync(async () => await handler.Handle(command, CancellationToken.None));
+            Assert.DoesNotThrowAsync(async () => await _service.SetNotificationStatusAsync(command, CancellationToken.None));
         }
 
-        [Test, MoqAutoData]
-        public async Task GetNotificationStatusQueryHandler_GetStatusName_ReturnsCorrectNames_Test()
-        {
-            // Arrange
-            var handler = new GetNotificationStatusQueryHandler(DbContext);
-
-            var accountId1 = Guid.NewGuid();
-            await PopulateDbContextWithNotifications(accountId1, 1L, 1);
-            var query1 = new GetNotificationStatusQuery { AccountIdentifier = accountId1, NotificationIdentifier = 1L };
-            var result1 = await handler.Handle(query1, CancellationToken.None);
-            Assert.That(result1.StatusName, Is.EqualTo("Unread"));
-
-            var accountId2 = Guid.NewGuid();
-            await PopulateDbContextWithNotifications(accountId2, 2L, 2);
-            var query2 = new GetNotificationStatusQuery { AccountIdentifier = accountId2, NotificationIdentifier = 2L };
-            var result2 = await handler.Handle(query2, CancellationToken.None);
-            Assert.That(result2.StatusName, Is.EqualTo("Acknowledged"));
-
-            var accountId3 = Guid.NewGuid();
-            await PopulateDbContextWithNotifications(accountId3, 3L, 3);
-            var query3 = new GetNotificationStatusQuery { AccountIdentifier = accountId3, NotificationIdentifier = 3L };
-            var result3 = await handler.Handle(query3, CancellationToken.None);
-            Assert.That(result3.StatusName, Is.EqualTo("Hidden"));
-
-            var accountId4 = Guid.NewGuid();
-            await PopulateDbContextWithNotifications(accountId4, 4L, 4);
-            var query4 = new GetNotificationStatusQuery { AccountIdentifier = accountId4, NotificationIdentifier = 4L };
-            var result4 = await handler.Handle(query4, CancellationToken.None);
-            Assert.That(result4.StatusName, Is.EqualTo("Expired"));
-
-            var accountId5 = Guid.NewGuid();
-            await PopulateDbContextWithNotifications(accountId5, 5L, 99);
-            var query99 = new GetNotificationStatusQuery { AccountIdentifier = accountId5, NotificationIdentifier = 5L };
-            var result99 = await handler.Handle(query99, CancellationToken.None);
-            Assert.That(result99.StatusName, Is.EqualTo("Unread"));
-        }
+        // ==================== CreateNotification Tests ====================
 
         [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesNotification_Test()
+        public async Task CreateNotification_CreatesNotification_Test()
         {
             // Arrange
             var correlationId = Guid.NewGuid();
@@ -593,7 +586,6 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             var timeToExpire = DateTime.UtcNow.AddDays(30);
             var timeReceived = DateTime.UtcNow.AddHours(-1.5);
 
-            var handler = new CreateNotificationCommandHandler(DbContext);
             var command = new CreateNotificationCommand
             {
                 CorrelationId = correlationId,
@@ -601,7 +593,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 Category = "SystemAlert",
                 Heading = "Important Update",
                 Body = "Your account has been updated with new features.",
-                StatusId = 1, // Unread
+                StatusId = 1,
                 NotificationTime = notificationTime,
                 TimeToExpire = timeToExpire,
                 TimeReceived = timeReceived,
@@ -610,7 +602,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(command, CancellationToken.None);
+            await _service.CreateNotificationAsync(command, CancellationToken.None);
 
             // Assert
             var createdNotification = await DbContext.Notifications
@@ -628,13 +620,12 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesNotification_WithNullLink_Test()
+        public async Task CreateNotification_CreatesNotification_WithNullLink_Test()
         {
             // Arrange
             var correlationId = Guid.NewGuid();
             var learnerAccountId = Guid.NewGuid();
 
-            var handler = new CreateNotificationCommandHandler(DbContext);
             var command = new CreateNotificationCommand
             {
                 CorrelationId = correlationId,
@@ -642,7 +633,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
                 Category = "TrainingReminder",
                 Heading = "Training Due",
                 Body = "Please complete your training.",
-                StatusId = 1, // Unread
+                StatusId = 1,
                 NotificationTime = DateTime.UtcNow,
                 TimeToExpire = DateTime.UtcNow.AddDays(7),
                 TimeReceived = DateTime.UtcNow,
@@ -651,7 +642,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(command, CancellationToken.None);
+            await _service.CreateNotificationAsync(command, CancellationToken.None);
 
             // Assert
             var createdNotification = await DbContext.Notifications
@@ -662,11 +653,10 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesMultipleNotifications_ForSameLearner_Test()
+        public async Task CreateNotification_CreatesMultipleNotifications_ForSameLearner_Test()
         {
             // Arrange
             var learnerAccountId = Guid.NewGuid();
-            var handler = new CreateNotificationCommandHandler(DbContext);
 
             var command1 = new CreateNotificationCommand
             {
@@ -699,8 +689,8 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(command1, CancellationToken.None);
-            await handler.Handle(command2, CancellationToken.None);
+            await _service.CreateNotificationAsync(command1, CancellationToken.None);
+            await _service.CreateNotificationAsync(command2, CancellationToken.None);
 
             // Assert
             var notifications = await DbContext.Notifications
@@ -712,12 +702,11 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesNotifications_ForDifferentLearners_Test()
+        public async Task CreateNotification_CreatesNotifications_ForDifferentLearners_Test()
         {
             // Arrange
             var learnerAccountId1 = Guid.NewGuid();
             var learnerAccountId2 = Guid.NewGuid();
-            var handler = new CreateNotificationCommandHandler(DbContext);
 
             var command1 = new CreateNotificationCommand
             {
@@ -750,8 +739,8 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(command1, CancellationToken.None);
-            await handler.Handle(command2, CancellationToken.None);
+            await _service.CreateNotificationAsync(command1, CancellationToken.None);
+            await _service.CreateNotificationAsync(command2, CancellationToken.None);
 
             // Assert
             var notification1 = await DbContext.Notifications
@@ -767,11 +756,9 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesNotification_WithDifferentStatusIds_Test()
+        public async Task CreateNotification_CreatesNotification_WithDifferentStatusIds_Test()
         {
             // Arrange
-            var handler = new CreateNotificationCommandHandler(DbContext);
-
             var commandUnread = new CreateNotificationCommand
             {
                 CorrelationId = Guid.NewGuid(),
@@ -803,8 +790,8 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(commandUnread, CancellationToken.None);
-            await handler.Handle(commandAcknowledged, CancellationToken.None);
+            await _service.CreateNotificationAsync(commandUnread, CancellationToken.None);
+            await _service.CreateNotificationAsync(commandAcknowledged, CancellationToken.None);
 
             // Assert
             var unreadNotification = await DbContext.Notifications
@@ -816,169 +803,9 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         }
 
         [Test, MoqAutoData]
-        public async Task DeleteNotificationCommandHandler_DeletesNotification_Test()
+        public async Task CreateNotification_CreatesNotification_WithDifferentUrgencyLevels_Test()
         {
             // Arrange
-            var accountId = Guid.NewGuid();
-            var notificationId = 1L;
-            await PopulateDbContextWithNotificationsAndStatusHistory(accountId, notificationId, 1);
-
-            var handler = new DeleteNotificationCommandHandler(DbContext);
-            var command = new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountId,
-                NotificationIdentifier = notificationId
-            };
-
-            var notificationBefore = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId);
-            Assert.That(notificationBefore, Is.Not.Null);
-            var statusHistoryBefore = await DbContext.StatusHistory
-                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
-            Assert.That(statusHistoryBefore, Is.Not.Empty);
-
-            // Act
-            await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            var notificationAfter = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId);
-            Assert.That(notificationAfter, Is.Null);
-            var statusHistoryAfter = await DbContext.StatusHistory
-                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
-            Assert.That(statusHistoryAfter, Is.Empty);
-        }
-
-        [Test, MoqAutoData]
-        public async Task DeleteNotificationCommandHandler_DeletesOnlySpecifiedNotification_Test()
-        {
-            // Arrange
-            var accountId = Guid.NewGuid();
-            var notificationId1 = 1L;
-            var notificationId2 = 2L;
-            await PopulateDbContextWithNotifications(accountId, notificationId1, 1);
-            await PopulateDbContextWithNotifications(accountId, notificationId2, 2);
-
-            var handler = new DeleteNotificationCommandHandler(DbContext);
-            var command = new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountId,
-                NotificationIdentifier = notificationId1
-            };
-
-            // Act
-            await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            var deleted = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId1 && n.LearnerAccountId == accountId);
-            var remaining = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId2 && n.LearnerAccountId == accountId);
-            Assert.That(deleted, Is.Null);
-            Assert.That(remaining, Is.Not.Null);
-            Assert.That(remaining.NotificationId, Is.EqualTo(notificationId2));
-        }
-
-        [Test, MoqAutoData]
-        public async Task DeleteNotificationCommandHandler_DoesNothing_WhenNotificationNotFound_Test()
-        {
-            // Arrange
-            var accountId = Guid.NewGuid();
-            var notificationId = 999L;
-            var handler = new DeleteNotificationCommandHandler(DbContext);
-            var command = new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountId,
-                NotificationIdentifier = notificationId
-            };
-
-            // Act & Assert
-            Assert.DoesNotThrowAsync(async () => await handler.Handle(command, CancellationToken.None));
-        }
-
-        [Test, MoqAutoData]
-        public async Task DeleteNotificationCommandHandler_DoesNotDelete_WhenAccountIdentifierDoesNotMatch_Test()
-        {
-            // Arrange
-            var accountId1 = Guid.NewGuid();
-            var accountId2 = Guid.NewGuid();
-            var notificationId = 1L;
-            await PopulateDbContextWithNotifications(accountId1, notificationId, 1);
-
-            var handler = new DeleteNotificationCommandHandler(DbContext);
-            var command = new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountId2,
-                NotificationIdentifier = notificationId
-            };
-
-            // Act
-            await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            var notification = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId1);
-            Assert.That(notification, Is.Not.Null);
-        }
-
-        [Test, MoqAutoData]
-        public async Task DeleteNotificationCommandHandler_DeletesNotificationAndStatusHistory_Test()
-        {
-            // Arrange
-            var accountId = Guid.NewGuid();
-            var notificationId = 1L;
-            var notification = _fixture.Build<Notification>()
-                .With(n => n.NotificationId, notificationId)
-                .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, (byte)2)
-                .Create();
-            var statusHistory1 = _fixture.Build<StatusHistory>()
-                .With(sh => sh.StatusHistoryId, 1L)
-                .With(sh => sh.NotificationId, notificationId)
-                .With(sh => sh.Status, (byte)1)
-                .With(sh => sh.ChangeDate, DateTime.UtcNow.AddHours(-2))
-                .Create();
-            var statusHistory2 = _fixture.Build<StatusHistory>()
-                .With(sh => sh.StatusHistoryId, 2L)
-                .With(sh => sh.NotificationId, notificationId)
-                .With(sh => sh.Status, (byte)2)
-                .With(sh => sh.ChangeDate, DateTime.UtcNow.AddHours(-1))
-                .Create();
-            var statusHistory3 = _fixture.Build<StatusHistory>()
-                .With(sh => sh.StatusHistoryId, 3L)
-                .With(sh => sh.NotificationId, notificationId)
-                .With(sh => sh.Status, (byte)3)
-                .With(sh => sh.ChangeDate, DateTime.UtcNow)
-                .Create();
-            await DbContext.Notifications.AddAsync(notification);
-            await DbContext.StatusHistory.AddRangeAsync(statusHistory1, statusHistory2, statusHistory3);
-            await DbContext.SaveChangesAsync();
-
-            var handler = new DeleteNotificationCommandHandler(DbContext);
-            var command = new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountId,
-                NotificationIdentifier = notificationId
-            };
-
-            // Act
-            await handler.Handle(command, CancellationToken.None);
-
-            // Assert
-            var deletedNotification = await DbContext.Notifications
-                .FirstOrDefaultAsync(n => n.NotificationId == notificationId);
-            var remainingHistory = await DbContext.StatusHistory
-                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
-            Assert.That(deletedNotification, Is.Null);
-            Assert.That(remainingHistory, Is.Empty);
-        }
-
-        [Test, MoqAutoData]
-        public async Task CreateNotificationCommandHandler_CreatesNotification_WithDifferentUrgencyLevels_Test()
-        {
-            // Arrange
-            var handler = new CreateNotificationCommandHandler(DbContext);
-
             var commandLow = new CreateNotificationCommand
             {
                 CorrelationId = Guid.NewGuid(),
@@ -1010,8 +837,8 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             };
 
             // Act
-            await handler.Handle(commandLow, CancellationToken.None);
-            await handler.Handle(commandHigh, CancellationToken.None);
+            await _service.CreateNotificationAsync(commandLow, CancellationToken.None);
+            await _service.CreateNotificationAsync(commandHigh, CancellationToken.None);
 
             // Assert
             var lowNotification = await DbContext.Notifications
@@ -1022,6 +849,161 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             Assert.That(highNotification, Is.Not.Null);
         }
 
+        // ==================== DeleteNotification Tests ====================
+
+        [Test, MoqAutoData]
+        public async Task DeleteNotification_DeletesNotification_Test()
+        {
+            // Arrange
+            var accountId = Guid.NewGuid();
+            var notificationId = 1L;
+            await PopulateDbContextWithNotificationsAndStatusHistory(accountId, notificationId, 1);
+
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountId,
+                NotificationIdentifier = notificationId
+            };
+
+            var notificationBefore = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId);
+            Assert.That(notificationBefore, Is.Not.Null);
+            var statusHistoryBefore = await DbContext.StatusHistory
+                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
+            Assert.That(statusHistoryBefore, Is.Not.Empty);
+
+            // Act
+            await _service.DeleteNotificationAsync(command, CancellationToken.None);
+
+            // Assert
+            var notificationAfter = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId);
+            Assert.That(notificationAfter, Is.Null);
+            var statusHistoryAfter = await DbContext.StatusHistory
+                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
+            Assert.That(statusHistoryAfter, Is.Empty);
+        }
+
+        [Test, MoqAutoData]
+        public async Task DeleteNotification_DeletesOnlySpecifiedNotification_Test()
+        {
+            // Arrange
+            var accountId = Guid.NewGuid();
+            var notificationId1 = 1L;
+            var notificationId2 = 2L;
+            await PopulateDbContextWithNotifications(accountId, notificationId1, 1);
+            await PopulateDbContextWithNotifications(accountId, notificationId2, 2);
+
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountId,
+                NotificationIdentifier = notificationId1
+            };
+
+            // Act
+            await _service.DeleteNotificationAsync(command, CancellationToken.None);
+
+            // Assert
+            var deleted = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId1 && n.LearnerAccountId == accountId);
+            var remaining = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId2 && n.LearnerAccountId == accountId);
+            Assert.That(deleted, Is.Null);
+            Assert.That(remaining, Is.Not.Null);
+            Assert.That(remaining.NotificationId, Is.EqualTo(notificationId2));
+        }
+
+        [Test, MoqAutoData]
+        public async Task DeleteNotification_DoesNothing_WhenNotificationNotFound_Test()
+        {
+            // Arrange
+            var accountId = Guid.NewGuid();
+            var notificationId = 999L;
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountId,
+                NotificationIdentifier = notificationId
+            };
+
+            // Act & Assert
+            Assert.DoesNotThrowAsync(async () => await _service.DeleteNotificationAsync(command, CancellationToken.None));
+        }
+
+        [Test, MoqAutoData]
+        public async Task DeleteNotification_DoesNotDelete_WhenAccountIdentifierDoesNotMatch_Test()
+        {
+            // Arrange
+            var accountId1 = Guid.NewGuid();
+            var accountId2 = Guid.NewGuid();
+            var notificationId = 1L;
+            await PopulateDbContextWithNotifications(accountId1, notificationId, 1);
+
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountId2,
+                NotificationIdentifier = notificationId
+            };
+
+            // Act
+            await _service.DeleteNotificationAsync(command, CancellationToken.None);
+
+            // Assert
+            var notification = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId && n.LearnerAccountId == accountId1);
+            Assert.That(notification, Is.Not.Null);
+        }
+
+        [Test, MoqAutoData]
+        public async Task DeleteNotification_DeletesNotificationAndStatusHistory_Test()
+        {
+            // Arrange
+            var accountId = Guid.NewGuid();
+            var notificationId = 1L;
+            var notification = _fixture.Build<Notification>()
+                .With(n => n.NotificationId, notificationId)
+                .With(n => n.LearnerAccountId, accountId)
+                .With(n => n.StatusId, (byte)2)
+                .Create();
+            var statusHistory1 = _fixture.Build<StatusHistory>()
+                .With(sh => sh.StatusHistoryId, 1L)
+                .With(sh => sh.NotificationId, notificationId)
+                .With(sh => sh.Status, (byte)1)
+                .With(sh => sh.ChangeDate, DateTime.UtcNow.AddHours(-2))
+                .Create();
+            var statusHistory2 = _fixture.Build<StatusHistory>()
+                .With(sh => sh.StatusHistoryId, 2L)
+                .With(sh => sh.NotificationId, notificationId)
+                .With(sh => sh.Status, (byte)2)
+                .With(sh => sh.ChangeDate, DateTime.UtcNow.AddHours(-1))
+                .Create();
+            var statusHistory3 = _fixture.Build<StatusHistory>()
+                .With(sh => sh.StatusHistoryId, 3L)
+                .With(sh => sh.NotificationId, notificationId)
+                .With(sh => sh.Status, (byte)3)
+                .With(sh => sh.ChangeDate, DateTime.UtcNow)
+                .Create();
+            await DbContext.Notifications.AddAsync(notification);
+            await DbContext.StatusHistory.AddRangeAsync(statusHistory1, statusHistory2, statusHistory3);
+            await DbContext.SaveChangesAsync();
+
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountId,
+                NotificationIdentifier = notificationId
+            };
+
+            // Act
+            await _service.DeleteNotificationAsync(command, CancellationToken.None);
+
+            // Assert
+            var deletedNotification = await DbContext.Notifications
+                .FirstOrDefaultAsync(n => n.NotificationId == notificationId);
+            var remainingHistory = await DbContext.StatusHistory
+                .Where(sh => sh.NotificationId == notificationId).ToListAsync();
+            Assert.That(deletedNotification, Is.Null);
+            Assert.That(remainingHistory, Is.Empty);
+        }
+
         // ------------------------------------------------------------------
         // Private helper methods
         // ------------------------------------------------------------------
@@ -1030,7 +1012,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
         {
             var notification = _fixture.Build<Notification>()
                 .With(n => n.LearnerAccountId, accountId)
-                .With(n => n.StatusId, statusId ?? 1) // Default to Unread
+                .With(n => n.StatusId, statusId ?? 1)
                 .Create();
 
             if (notificationId.HasValue)
@@ -1040,7 +1022,7 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             {
                 var secondNotification = _fixture.Build<Notification>()
                     .With(n => n.LearnerAccountId, accountId)
-                    .With(n => n.StatusId, statusId ?? 2) // Default to Acknowledged
+                    .With(n => n.StatusId, statusId ?? 2)
                     .Create();
                 await DbContext.Notifications.AddAsync(secondNotification);
             }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerNotifications.Application.Models;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Commands;
+using SFA.DAS.LearnerNotifications.Application.Notifications;
 
 namespace SFA.DAS.LearnerNotifications.Api.Controllers
 {
@@ -14,11 +14,11 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
     [Route("learner/")]
     public class LearnerNotificationsController : ControllerBase
     {
-        private readonly IMediator _mediator;
+        private readonly INotificationService _notificationService;
 
-        public LearnerNotificationsController(IMediator mediator)
+        public LearnerNotificationsController(INotificationService notificationService)
         {
-            _mediator = mediator;
+            _notificationService = notificationService;
         }
 
         [HttpGet("{accountIdentifier}")]
@@ -28,13 +28,14 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
             [FromQuery] DateTime? dateFrom = null,
             [FromQuery] List<Status> statuses = null)
         {
-            var result = await _mediator.Send(new GetNotificationsByAccountIdentifierQuery
+            var query = new GetNotificationsByAccountIdentifierQuery
             {
                 AccountIdentifier = accountIdentifier,
                 Order = order,
                 DateFrom = dateFrom,
                 Statuses = statuses
-            });
+            };
+            var result = await _notificationService.GetNotificationsByAccountAsync(query, HttpContext.RequestAborted);
 
             if (result == null || result.Notifications.Count == 0)
                 return NotFound();
@@ -45,50 +46,52 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
         [HttpGet("{accountIdentifier}/notifications/{notificationIdentifier}")]
         public async Task<IActionResult> GetNotification(Guid accountIdentifier, long notificationIdentifier)
         {
-            var result = await _mediator.Send(new GetNotificationByIdQuery 
-            { 
+            var query = new GetNotificationByIdQuery
+            {
                 AccountIdentifier = accountIdentifier,
                 NotificationIdentifier = notificationIdentifier
-            });
-            
-            if (result == null) 
+            };
+            var result = await _notificationService.GetNotificationByIdAsync(query, HttpContext.RequestAborted);
+
+            if (result == null)
                 return NotFound();
-                
+
             return Ok(result);
         }
 
         [HttpGet("{accountIdentifier}/notifications/{notificationIdentifier}/status")]
         public async Task<IActionResult> GetNotificationStatus(Guid accountIdentifier, long notificationIdentifier)
         {
-            var result = await _mediator.Send(new GetNotificationStatusQuery 
-            { 
+            var query = new GetNotificationStatusQuery
+            {
                 AccountIdentifier = accountIdentifier,
                 NotificationIdentifier = notificationIdentifier
-            });
-            
-            if (result == null) 
+            };
+            var result = await _notificationService.GetNotificationStatusAsync(query, HttpContext.RequestAborted);
+
+            if (result == null)
                 return NotFound();
-                
+
             return Ok(result);
         }
 
         [HttpPut("{accountIdentifier}/notifications/{notificationIdentifier}/status")]
         public async Task<IActionResult> SetNotificationStatus(Guid accountIdentifier, long notificationIdentifier, [FromBody] SetNotificationStatusRequest request)
         {
-            await _mediator.Send(new SetNotificationStatusCommand
+            var command = new SetNotificationStatusCommand
             {
                 AccountIdentifier = accountIdentifier,
                 NotificationIdentifier = notificationIdentifier,
                 StatusId = request.StatusId
-            });
-
+            };
+            await _notificationService.SetNotificationStatusAsync(command, HttpContext.RequestAborted);
             return Ok();
         }
-        
+
         [HttpPost("{accountIdentifier}/notifications")]
         public async Task<IActionResult> CreateNotification(Guid accountIdentifier, [FromBody] CreateNotificationRequest request)
         {
-            await _mediator.Send(new CreateNotificationCommand
+            var command = new CreateNotificationCommand
             {
                 CorrelationId = request.CorrelationId,
                 LearnerAccountId = accountIdentifier,
@@ -101,11 +104,23 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
                 TimeReceived = request.TimeReceived,
                 Link = request.Link,
                 Urgency = request.Urgency
-            });
-
+            };
+            await _notificationService.CreateNotificationAsync(command, HttpContext.RequestAborted);
             return Ok();
-        }      
-        
+        }
+
+        [HttpDelete("{accountIdentifier}/notifications/{notificationId}")]
+        public async Task<IActionResult> DeleteNotification(Guid accountIdentifier, long notificationId)
+        {
+            var command = new DeleteNotificationCommand
+            {
+                AccountIdentifier = accountIdentifier,
+                NotificationIdentifier = notificationId
+            };
+            await _notificationService.DeleteNotificationAsync(command, HttpContext.RequestAborted);
+            return NoContent();
+        }
+
         public class CreateNotificationRequest
         {
             public Guid CorrelationId { get; set; }
@@ -118,18 +133,6 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
             public DateTime TimeReceived { get; set; }
             public string? Link { get; set; }
             public byte Urgency { get; set; }
-        }
-
-        [HttpDelete("{accountIdentifier}/notifications/{notificationId}")]
-        public async Task<IActionResult> DeleteNotification(Guid accountIdentifier, long notificationId)
-        {
-            await _mediator.Send(new DeleteNotificationCommand
-            {
-                AccountIdentifier = accountIdentifier,
-                NotificationIdentifier = notificationId
-            });
-
-            return NoContent();
         }
 
         public class SetNotificationStatusRequest
