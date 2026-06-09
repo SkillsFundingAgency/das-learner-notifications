@@ -27,8 +27,8 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
         {
             learnerNotification = new SFA.DAS.LearnerNotifications.Messages.Commands.SendNotification
             {
-                CorrelationId = Guid.NewGuid(),
-                LearnerAccountId = Guid.NewGuid(),
+                CorrelationId = Guid.CreateVersion7(),
+                LearnerAccountId = Guid.CreateVersion7(),
                 Category = "TestCategory",
                 Heading = "Test Heading",
                 Body = "Test Body",
@@ -58,7 +58,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
             Assert.AreEqual(learnerNotification.Body, storedNotification.Body, "Body does not match.");
             Assert.AreEqual(learnerNotification.LinkUrl, storedNotification.LinkUrl, "LinkUrl does not match.");
             Assert.AreEqual(learnerNotification.Category, storedNotification.Category, "Category does not match.");
-            Assert.AreSame(learnerNotification.LearnerAccountId, storedNotification.LearnerAccountId, "LearnerAccountId does not match.");
+            Assert.AreEqual(learnerNotification.LearnerAccountId, storedNotification.LearnerAccountId, "LearnerAccountId does not match.");
         }
 
         [Then("the notification should have a status of {string}")]

@@ -29,7 +29,7 @@ namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.StepDefinitions
 
         public async Task Send<T>(T message)
         {
-            await messageSession.Send(message);
+         await messageSession.Send(message);
         }
 
         public long GenerateId(int maxValue = 1000000)
