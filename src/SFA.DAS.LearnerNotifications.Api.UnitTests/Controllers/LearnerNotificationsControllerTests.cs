@@ -11,12 +11,11 @@ using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerNotifications.Api.Controllers;
 using SFA.DAS.LearnerNotifications.Application.Commands;
-using SFA.DAS.LearnerNotifications.Application.Models;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
+using SFA.DAS.LearnerNotifications.Models;
 using SFA.DAS.Testing.AutoFixture;
-using Status = SFA.DAS.LearnerNotifications.Application.Models.Status;
 
 namespace SFA.DAS.LearnerNotifications.UnitTests
 {

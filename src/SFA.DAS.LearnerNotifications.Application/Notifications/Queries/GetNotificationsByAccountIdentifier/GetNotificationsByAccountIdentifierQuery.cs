@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using MediatR;
-using SFA.DAS.LearnerNotifications.Application.Models;
 using SFA.DAS.LearnerNotifications.Application.Queries.Results;
+using SFA.DAS.LearnerNotifications.Models;
 
 namespace SFA.DAS.LearnerNotifications.Application.Queries
 {
@@ -11,6 +11,6 @@ namespace SFA.DAS.LearnerNotifications.Application.Queries
         public Guid AccountIdentifier { get; set; }
         public SortOrder Order { get; set; } = SortOrder.Descending;
         public DateTime? DateFrom { get; set; }
-        public List<Status> Statuses { get; set; }
+        public List<NotificationStatus> Statuses { get; set; }
     }
 }

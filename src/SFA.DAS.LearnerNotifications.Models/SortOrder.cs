@@ -1,4 +1,4 @@
-﻿namespace SFA.DAS.LearnerNotifications.Application.Models
+﻿namespace SFA.DAS.LearnerNotifications.Models
 {
     public enum SortOrder
     {

@@ -38,7 +38,7 @@ namespace SFA.DAS.LearnerNotifications.Application.Tests.Unit
                 Urgency = Messages.Commands.Urgency.Medium
             };
             await processor.Process(message);
-            dataContextMock.Verify(x => x.SaveNotification(It.Is<Models.Notification>(notification =>
+            dataContextMock.Verify(x => x.SaveNotification(It.Is<SFA.DAS.LearnerNotifications.Models.Notification>(notification =>
                 notification.Heading == message.Heading &&
                 notification.Body == message.Body &&
                 notification.LinkUrl == message.LinkUrl &&
@@ -69,8 +69,8 @@ namespace SFA.DAS.LearnerNotifications.Application.Tests.Unit
                 Urgency = Messages.Commands.Urgency.Medium
             };
             await processor.Process(message);
-            dataContextMock.Verify(x => x.SaveNotification(It.Is<Models.Notification>(notification =>
-                notification.Status == Models.NotificationStatus.Unread
+            dataContextMock.Verify(x => x.SaveNotification(It.Is<SFA.DAS.LearnerNotifications.Models.Notification>(notification =>
+                notification.Status == SFA.DAS.LearnerNotifications.Models.NotificationStatus.Unread
             )), Times.Once);
         }
 

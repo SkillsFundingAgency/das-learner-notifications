@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Data;
-using Status = SFA.DAS.LearnerNotifications.Application.Models.Status;
+using SFA.DAS.LearnerNotifications.Models;
 
 namespace SFA.DAS.LearnerNotifications.Application.Queries
 {
@@ -49,10 +49,10 @@ namespace SFA.DAS.LearnerNotifications.Application.Queries
 
         private string GetStatusName(byte statusId)
         {
-            if (Enum.IsDefined(typeof(Status), (int)statusId))
-                return ((Status)statusId).ToString();
+            if (Enum.IsDefined(typeof(NotificationStatus), (int)statusId))
+                return ((NotificationStatus)statusId).ToString();
             
-            return Status.Unread.ToString();
+            return NotificationStatus.Unread.ToString();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace SFA.DAS.LearnerNotifications.Application.Services
             logger.LogDebug($"Processing the notification with CorrelationId: {notification.CorrelationId}, heading: {notification.Heading}");
             try
             {
-                var model = new Models.Notification
+                var model = new SFA.DAS.LearnerNotifications.Models.Notification
                 {
                     CorrelationId = notification.CorrelationId,
                     LearnerAccountId = notification.LearnerAccountId,
@@ -40,7 +40,7 @@ namespace SFA.DAS.LearnerNotifications.Application.Services
                     NotificationTime = notification.NotificationTime,
                     TimeToExpire = notification.TimeToExpire,
                     Urgency = Convert(notification.Urgency),
-                    Status = Models.NotificationStatus.Unread,
+                    Status = SFA.DAS.LearnerNotifications.Models.NotificationStatus.Unread,
                 };
 
                 await dataContext.SaveNotification(model);
@@ -53,13 +53,13 @@ namespace SFA.DAS.LearnerNotifications.Application.Services
             }
         }
 
-        private Models.NotificationUrgency Convert(Urgency urgency)
+        private SFA.DAS.LearnerNotifications.Models.NotificationUrgency Convert(Urgency urgency)
         {
             return urgency switch
             {
-                Urgency.Low => Models.NotificationUrgency.Low,
-                Urgency.Medium => Models.NotificationUrgency.Medium,
-                Urgency.High => Models.NotificationUrgency.High,
+                Urgency.Low => SFA.DAS.LearnerNotifications.Models.NotificationUrgency.Low,
+                Urgency.Medium => SFA.DAS.LearnerNotifications.Models.NotificationUrgency.Medium,
+                Urgency.High => SFA.DAS.LearnerNotifications.Models.NotificationUrgency.High,
                 _ => throw new ArgumentOutOfRangeException(nameof(urgency), $"Unexpected urgency value: {urgency}")
             };
         }

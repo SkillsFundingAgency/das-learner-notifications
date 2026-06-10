@@ -9,14 +9,14 @@ namespace SFA.DAS.LearnerNotifications.Application.Data
 {
     public interface ILearnerNotificationsDataContext
     {
-        Task SaveNotification(Models.Notification notification);
+        Task SaveNotification(SFA.DAS.LearnerNotifications.Models.Notification notification);
     }
 
     public class LearnerNotificationsDataContext : DbContext, ILearnerNotificationsDataContext
     {
         private readonly string connectionString;
 
-        public DbSet<Models.Notification> Notifications { get; set; }
+        public DbSet<SFA.DAS.LearnerNotifications.Models.Notification> Notifications { get; set; }
 
         public LearnerNotificationsDataContext(string connectionString)
         {

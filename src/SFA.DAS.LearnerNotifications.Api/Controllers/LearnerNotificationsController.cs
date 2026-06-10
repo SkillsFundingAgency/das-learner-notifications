@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.LearnerNotifications.Application.Models;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Commands;
+using SFA.DAS.LearnerNotifications.Models;
 
 namespace SFA.DAS.LearnerNotifications.Api.Controllers
 {
@@ -26,7 +26,7 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
             Guid accountIdentifier,
             [FromQuery] SortOrder order = SortOrder.Descending,
             [FromQuery] DateTime? dateFrom = null,
-            [FromQuery] List<Status> statuses = null)
+            [FromQuery] List<NotificationStatus> statuses = null)
         {
             var result = await _mediator.Send(new GetNotificationsByAccountIdentifierQuery
             {
