@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Commands;
 using SFA.DAS.LearnerNotifications.Models;
+using SFA.DAS.LearnerNotifications.Domain.Entities;
 
 namespace SFA.DAS.LearnerNotifications.Api.Controllers
 {

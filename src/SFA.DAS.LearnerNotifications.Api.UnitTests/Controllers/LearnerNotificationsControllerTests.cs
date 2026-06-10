@@ -16,6 +16,7 @@ using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
 using SFA.DAS.LearnerNotifications.Models;
 using SFA.DAS.Testing.AutoFixture;
+using Notification = SFA.DAS.LearnerNotifications.Domain.Entities.Notification;
 
 namespace SFA.DAS.LearnerNotifications.UnitTests
 {
@@ -102,7 +103,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesStatusesParameter_ToMediator(Guid accountIdentifier, List<Status> statuses)
+        public async Task GetNotifications_PassesStatusesParameter_ToMediator(Guid accountIdentifier, List<NotificationStatus> statuses)
         {
             // Arrange
             _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
@@ -118,7 +119,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesAllParameters_ToMediator(Guid accountIdentifier, DateTime dateFrom, List<Status> statuses)
+        public async Task GetNotifications_PassesAllParameters_ToMediator(Guid accountIdentifier, DateTime dateFrom, List<NotificationStatus> statuses)
         {
             // Arrange
             var order = SortOrder.Descending;
