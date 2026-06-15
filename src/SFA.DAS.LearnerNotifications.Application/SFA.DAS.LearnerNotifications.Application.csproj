@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ProjectGuid>9817A4FE-9D15-4C14-B798-D5717E70CCC1</ProjectGuid>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+        <PackageReference Include="Microsoft.Azure.Services.AppAuthentication" Version="1.6.2" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
+        <PackageReference Include="Polly" Version="8.5.0" />
+        <PackageReference Include="Azure.Identity" Version="1.17.1" />
+        <PackageReference Include="Microsoft.Identity.Client" Version="4.80.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Domain\SFA.DAS.LearnerNotifications.Domain.csproj" />
+        <ProjectReference Include="..\SFA.DAS.LearnerNotifications.Data\SFA.DAS.LearnerNotifications.Data.csproj" />
+    </ItemGroup>
+
+</Project>
