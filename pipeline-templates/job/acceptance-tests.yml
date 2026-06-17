@@ -1,0 +1,41 @@
+parameters:
+  SolutionBaseName:
+  Environment:
+
+jobs:
+- job: AcceptanceTests
+  displayName: Run Acceptance Tests
+  pool:
+    name: DAS - Continuous Integration Agents
+    workspace:
+      clean: all
+  steps:
+  - task: DownloadPipelineArtifact@2
+    displayName: Download acceptance test artifact
+    inputs:
+      artifact: ${{ parameters.SolutionBaseName }}
+      path: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}
+
+  - task: FileTransform@1
+    displayName: Transform appSettings.json
+    inputs:
+      folderPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/acceptance-tests
+      fileType: json
+      targetFiles: appSettings.json
+
+  - task: DotNetCoreCLI@2
+    displayName: Run acceptance tests
+    inputs:
+      command: test
+      projects: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/acceptance-tests/net10.0/${{ parameters.SolutionBaseName }}.Tests.Acceptance.dll
+      arguments: --logger trx --results-directory $(Agent.TempDirectory)/TestResults
+      testRunTitle: Acceptance Tests - ${{ parameters.Environment }}
+
+  - task: PublishTestResults@2
+    displayName: Publish acceptance test results
+    condition: always()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: $(Agent.TempDirectory)/TestResults/*.trx
+      testRunTitle: Acceptance Tests - ${{ parameters.Environment }}
+      failTaskOnFailedTests: true

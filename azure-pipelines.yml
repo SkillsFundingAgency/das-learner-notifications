@@ -12,13 +12,13 @@ trigger:
 
 variables:
 - name: SolutionBaseName
-  value: __SolutionBaseName__ #PLACEHOLDER
+  value: SFA.DAS.LearnerNotifications
 - name: BuildConfiguration
   value: release
 - name: BuildPlatform
   value: any cpu
 - group: RELEASE Management Resources
-- group: __ReleaseVariableGroupName__ #PLACEHOLDER
+- group: RELEASE das-learner-notifications
 - name: Deploy
   value: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest'))]
 
@@ -29,12 +29,12 @@ resources:
   - repository: das-platform-building-blocks
     type: github
     name: SkillsFundingAgency/das-platform-building-blocks
-    ref: refs/tags/3.0.10
+    ref: refs/tags/3.0.32
     endpoint: SkillsFundingAgency
   - repository: das-platform-automation
     type: github
     name: SkillsFundingAgency/das-platform-automation
-    ref: refs/tags/5.1.19
+    ref: refs/tags/5.1.24
     endpoint: SkillsFundingAgency
   pipelines:
   - pipeline: das-employer-config
@@ -51,7 +51,7 @@ stages:
       BuildConfiguration: $(BuildConfiguration)
   - template: azure-pipelines-templates/build/job/dacpac-template.yml@das-platform-building-blocks
     parameters:
-      SolutionBaseName: $(SolutionBaseName)
+      SolutionBaseName: $(SolutionBaseName).dacpac
       SqlProjectPath: src/$(SolutionBaseName).Database/$(SolutionBaseName).Database.sqlproj
 
 - stage: Deploy_AT
@@ -61,6 +61,7 @@ stages:
   variables:
   - group: DevTest Management Resources
   - group: AT DevTest Shared Resources
+  - group: AT das-learner-notifications
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -69,12 +70,28 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
+- stage: AcceptanceTests_AT
+  dependsOn: Deploy_AT
+  displayName: Acceptance Tests - AT
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
+  variables:
+  - group: DevTest Management Resources
+  - group: AT DevTest Shared Resources
+  - group: AT das-learner-notifications
+  jobs:
+  - template: pipeline-templates/job/acceptance-tests.yml
+    parameters:
+      Environment: AT
+      SolutionBaseName: $(SolutionBaseName)
+
 - stage: Deploy_TEST
   dependsOn: Build
   displayName: Deploy to TEST
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
   variables:
   - group: DevTest Management Resources
   - group: TEST DevTest Shared Resources
+  - group: TEST das-learner-notifications
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -83,12 +100,28 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
+- stage: AcceptanceTests_TEST
+  dependsOn: Deploy_TEST
+  displayName: Acceptance Tests - TEST
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
+  variables:
+  - group: DevTest Management Resources
+  - group: TEST DevTest Shared Resources
+  - group: TEST das-learner-notifications
+  jobs:
+  - template: pipeline-templates/job/acceptance-tests.yml
+    parameters:
+      Environment: TEST
+      SolutionBaseName: $(SolutionBaseName)
+
 - stage: Deploy_TEST2
   dependsOn: Build
   displayName: Deploy to TEST2
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
   variables:
   - group: DevTest Management Resources
   - group: TEST2 DevTest Shared Resources
+  - group: TEST2 das-learner-notifications
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -97,12 +130,28 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
+- stage: AcceptanceTests_TEST2
+  dependsOn: Deploy_TEST2
+  displayName: Acceptance Tests - TEST2
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
+  variables:
+  - group: DevTest Management Resources
+  - group: TEST2 DevTest Shared Resources
+  - group: TEST2 das-learner-notifications
+  jobs:
+  - template: pipeline-templates/job/acceptance-tests.yml
+    parameters:
+      Environment: TEST2
+      SolutionBaseName: $(SolutionBaseName)
+
 - stage: Deploy_PP
   dependsOn: Build
   displayName: Deploy to PP
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
   variables:
   - group: PreProd Management Resources
   - group: PreProd Shared Resources
+  - group: PREPROD das-learner-notifications
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
@@ -141,11 +190,13 @@ stages:
 #       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
 - stage: Deploy_DEMO
-  dependsOn: Build
+  dependsOn: AcceptanceTests_AT
   displayName: Deploy to DEMO
+  condition: and(succeeded(), eq(variables.Deploy, 'true'))
   variables:
   - group: DevTest Management Resources
   - group: DEMO DevTest Shared Resources
+  - group: DEMO das-learner-notifications
   jobs:
   - template: pipeline-templates/job/deploy.yml
     parameters:
