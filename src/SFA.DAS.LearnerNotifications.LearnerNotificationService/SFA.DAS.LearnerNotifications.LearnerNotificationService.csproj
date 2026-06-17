@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<AzureFunctionsVersion>v4</AzureFunctionsVersion>
+		<OutputType>Exe</OutputType>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker" Version="2.52.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.OpenTelemetry" Version="1.2.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore" Version="2.1.0" />
+		<PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="2.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.8" />		
+		<PackageReference Include="NServiceBus" Version="10.2.3" />
+		<PackageReference Include="NServiceBus.AzureFunctions.Worker.ServiceBus" Version="7.1.1" />
+		<PackageReference Include="NServiceBus.Transport.AzureServiceBus" Version="6.3.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.15.3" />
+		<PackageReference Include="Azure.Monitor.OpenTelemetry.Exporter" Version="1.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\SFA.DAS.LearnerNotifications.Application\SFA.DAS.LearnerNotifications.Application.csproj" />
+		<ProjectReference Include="..\SFA.DAS.LearnerNotifications.Messages\SFA.DAS.LearnerNotifications.Messages.csproj" />
+		<ProjectReference Include="..\SFA.DAS.LearnerNotifications.Models\SFA.DAS.LearnerNotifications.Models.csproj" />
+	</ItemGroup>
+</Project>
