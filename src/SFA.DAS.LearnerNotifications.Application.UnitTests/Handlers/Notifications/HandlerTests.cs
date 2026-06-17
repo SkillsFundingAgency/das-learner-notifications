@@ -1049,5 +1049,52 @@ namespace SFA.DAS.LearnerNotifications.Application.UnitTests.DataFixture
             await DbContext.StatusHistory.AddAsync(statusHistory);
             await DbContext.SaveChangesAsync();
         }
+        
+        [Test, MoqAutoData]
+        public async Task DeleteExpiredNotificationsAsync_RemovesExpiredNotificationsAndHistory()
+        {
+            // Arrange
+            var now = DateTime.UtcNow;
+            var expired1 = new Notification { NotificationId = 1, TimeToExpire = now.AddDays(-1) };
+            var expired2 = new Notification { NotificationId = 2, TimeToExpire = now.AddDays(-2) };
+            var active = new Notification { NotificationId = 3, TimeToExpire = now.AddDays(1) };
+            var history1 = new StatusHistory { StatusHistoryId = 101, NotificationId = 1 };
+            var history2 = new StatusHistory { StatusHistoryId = 102, NotificationId = 2 };
+            var history3 = new StatusHistory { StatusHistoryId = 103, NotificationId = 3 };
+
+            await DbContext.Notifications.AddRangeAsync(expired1, expired2, active);
+            await DbContext.StatusHistory.AddRangeAsync(history1, history2, history3);
+            await DbContext.SaveChangesAsync();
+
+            // Act
+            var deletedCount = await _service.DeleteExpiredNotificationsAsync(CancellationToken.None);
+
+            // Assert
+            Assert.That(deletedCount, Is.EqualTo(2));
+            var remainingNotifications = await DbContext.Notifications.ToListAsync();
+            Assert.That(remainingNotifications.Count, Is.EqualTo(1));
+            Assert.That(remainingNotifications[0].NotificationId, Is.EqualTo(3));
+            var remainingHistory = await DbContext.StatusHistory.ToListAsync();
+            Assert.That(remainingHistory.Count, Is.EqualTo(1));
+            Assert.That(remainingHistory[0].NotificationId, Is.EqualTo(3));
+        }
+
+        [Test, MoqAutoData]
+        public async Task DeleteExpiredNotificationsAsync_WhenNoExpired_ReturnsZero()
+        {
+            // Arrange
+            var now = DateTime.UtcNow;
+            var active = new Notification { NotificationId = 1, TimeToExpire = now.AddDays(1) };
+            await DbContext.Notifications.AddAsync(active);
+            await DbContext.SaveChangesAsync();
+
+            // Act
+            var deletedCount = await _service.DeleteExpiredNotificationsAsync(CancellationToken.None);
+
+            // Assert
+            Assert.That(deletedCount, Is.EqualTo(0));
+            var notifications = await DbContext.Notifications.ToListAsync();
+            Assert.That(notifications.Count, Is.EqualTo(1));
+        }
     }
 }

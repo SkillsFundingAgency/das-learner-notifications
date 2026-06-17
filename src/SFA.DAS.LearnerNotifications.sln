@@ -25,9 +25,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SFA.DAS.LearnerNotifications.Domain.UnitTests", "SFA.DAS.LearnerNotifications.Domain.UnitTests\SFA.DAS.LearnerNotifications.Domain.UnitTests.csproj", "{067BF3D1-9582-4CDD-8DDD-8EB4BC4899EC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.LearnerNotificationService", "SFA.DAS.LearnerNotifications.LearnerNotificationService\SFA.DAS.LearnerNotifications.LearnerNotificationService.csproj", "{EE428F5F-84D3-49EC-9C0E-592ADA323266}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Messages", "SFA.DAS.LearnerNotifications.Messages\SFA.DAS.LearnerNotifications.Messages.csproj", "{9647AC16-1111-4D1C-8284-7D77DF28C21D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Api.UnitTests", "SFA.DAS.LearnerNotifications.Api.UnitTests\SFA.DAS.LearnerNotifications.Api.UnitTests.csproj", "{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests", "SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests\SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.csproj", "{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Api.ReqnrollTests", "SFA.DAS.LearnerNotifications.Api.ReqnrollTests\SFA.DAS.LearnerNotifications.Api.ReqnrollTests.csproj", "{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}"
 EndProject
@@ -50,7 +54,6 @@ Global
 		{DE319EE7-8743-4193-A1C5-84698557307E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE319EE7-8743-4193-A1C5-84698557307E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8EE80DB6-D02E-4D04-8350-407BA322E5AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8EE80DB6-D02E-4D04-8350-407BA322E5AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EE80DB6-D02E-4D04-8350-407BA322E5AF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{8EE80DB6-D02E-4D04-8350-407BA322E5AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EE80DB6-D02E-4D04-8350-407BA322E5AF}.Release|Any CPU.Build.0 = Release|Any CPU
