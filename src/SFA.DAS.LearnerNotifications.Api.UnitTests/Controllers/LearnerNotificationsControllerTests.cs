@@ -4,33 +4,35 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoFixture.NUnit3;
 using FluentAssertions;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NUnit.Framework;
 using SFA.DAS.LearnerNotifications.Api.Controllers;
 using SFA.DAS.LearnerNotifications.Application.Commands;
+using SFA.DAS.LearnerNotifications.Application.Models;
+using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Application.Queries;
 using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
-using SFA.DAS.LearnerNotifications.Models;
 using SFA.DAS.Testing.AutoFixture;
-using Notification = SFA.DAS.LearnerNotifications.Domain.Entities.Notification;
+
+// Alias to resolve ambiguity between Application.Models.Status and Domain.Entities.Status
+using Status = SFA.DAS.LearnerNotifications.Application.Models.Status;
 
 namespace SFA.DAS.LearnerNotifications.UnitTests
 {
     [TestFixture]
     public class LearnerNotificationsControllerTests
     {
-        private Mock<IMediator> _mediatorMock;
+        private Mock<INotificationService> _notificationServiceMock;
         private LearnerNotificationsController _controller;
 
         [SetUp]
         public void SetUp()
         {
-            _mediatorMock = new Mock<IMediator>();
-            _controller = new LearnerNotificationsController(_mediatorMock.Object);
+            _notificationServiceMock = new Mock<INotificationService>();
+            _controller = new LearnerNotificationsController(_notificationServiceMock.Object);
             _controller.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext()
@@ -43,7 +45,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotifications_ReturnsNotFound_WhenNoNotificationsExist(Guid accountIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
@@ -58,7 +60,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         {
             // Arrange
             var expectedResult = new GetNotificationsByAccountIdentifierResult { Notifications = notifications };
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(expectedResult);
 
             // Act
@@ -70,70 +72,70 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesOrderParameter_ToMediator(Guid accountIdentifier)
+        public async Task GetNotifications_PassesOrderParameter_ToService(Guid accountIdentifier)
         {
             // Arrange
             var order = SortOrder.Ascending;
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
             await _controller.GetNotifications(accountIdentifier, order: order);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
+            _notificationServiceMock.Verify(s => s.GetNotificationsByAccountAsync(
                 It.Is<GetNotificationsByAccountIdentifierQuery>(q => q.Order == order),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesDateFromParameter_ToMediator(Guid accountIdentifier, DateTime dateFrom)
+        public async Task GetNotifications_PassesDateFromParameter_ToService(Guid accountIdentifier, DateTime dateFrom)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
             await _controller.GetNotifications(accountIdentifier, dateFrom: dateFrom);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
+            _notificationServiceMock.Verify(s => s.GetNotificationsByAccountAsync(
                 It.Is<GetNotificationsByAccountIdentifierQuery>(q => q.DateFrom == dateFrom),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesStatusesParameter_ToMediator(Guid accountIdentifier, List<NotificationStatus> statuses)
+        public async Task GetNotifications_PassesStatusesParameter_ToService(Guid accountIdentifier, List<Status> statuses)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
             await _controller.GetNotifications(accountIdentifier, statuses: statuses);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
+            _notificationServiceMock.Verify(s => s.GetNotificationsByAccountAsync(
                 It.Is<GetNotificationsByAccountIdentifierQuery>(q => q.Statuses == statuses),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotifications_PassesAllParameters_ToMediator(Guid accountIdentifier, DateTime dateFrom, List<NotificationStatus> statuses)
+        public async Task GetNotifications_PassesAllParameters_ToService(Guid accountIdentifier, DateTime dateFrom, List<Status> statuses)
         {
             // Arrange
             var order = SortOrder.Descending;
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
             await _controller.GetNotifications(accountIdentifier, order, dateFrom, statuses);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<GetNotificationsByAccountIdentifierQuery>(q => 
-                    q.Order == order && 
-                    q.DateFrom == dateFrom && 
+            _notificationServiceMock.Verify(s => s.GetNotificationsByAccountAsync(
+                It.Is<GetNotificationsByAccountIdentifierQuery>(q =>
+                    q.Order == order &&
+                    q.DateFrom == dateFrom &&
                     q.Statuses == statuses),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -142,14 +144,14 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotifications_UsesDefaultOrder_WhenNotProvided(Guid accountIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationsByAccountAsync(It.IsAny<GetNotificationsByAccountIdentifierQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new GetNotificationsByAccountIdentifierResult { Notifications = new List<Notification>() });
 
             // Act
             await _controller.GetNotifications(accountIdentifier);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
+            _notificationServiceMock.Verify(s => s.GetNotificationsByAccountAsync(
                 It.Is<GetNotificationsByAccountIdentifierQuery>(q => q.Order == SortOrder.Descending),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -160,7 +162,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotification_ReturnsNotFound_WhenNotificationDoesNotExist(Guid accountIdentifier, long notificationIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationByIdAsync(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((Notification)null);
 
             // Act
@@ -174,7 +176,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotification_ReturnsOk_WithNotification(Guid accountIdentifier, long notificationIdentifier, Notification notification)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationByIdAsync(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(notification);
 
             // Act
@@ -186,17 +188,17 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task GetNotification_PassesCorrectIds_ToMediator(Guid accountIdentifier, long notificationIdentifier)
+        public async Task GetNotification_PassesCorrectIds_ToService(Guid accountIdentifier, long notificationIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationByIdAsync(It.IsAny<GetNotificationByIdQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new Notification());
 
             // Act
             await _controller.GetNotification(accountIdentifier, notificationIdentifier);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
+            _notificationServiceMock.Verify(s => s.GetNotificationByIdAsync(
                 It.Is<GetNotificationByIdQuery>(q => q.AccountIdentifier == accountIdentifier && q.NotificationIdentifier == notificationIdentifier),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -207,7 +209,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotificationStatus_ReturnsNotFound_WhenStatusDoesNotExist(Guid accountIdentifier, long notificationIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationStatusQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationStatusAsync(It.IsAny<GetNotificationStatusQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync((GetNotificationStatusResult)null);
 
             // Act
@@ -221,7 +223,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task GetNotificationStatus_ReturnsOk_WithStatus(Guid accountIdentifier, long notificationIdentifier, GetNotificationStatusResult statusResult)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<GetNotificationStatusQuery>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.GetNotificationStatusAsync(It.IsAny<GetNotificationStatusQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(statusResult);
 
             // Act
@@ -238,7 +240,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task SetNotificationStatus_ReturnsOk_Always(Guid accountIdentifier, long notificationIdentifier, LearnerNotificationsController.SetNotificationStatusRequest request)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<SetNotificationStatusCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.SetNotificationStatusAsync(It.IsAny<SetNotificationStatusCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -249,20 +251,20 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task SetNotificationStatus_PassesCorrectCommand_ToMediator(Guid accountIdentifier, long notificationIdentifier, LearnerNotificationsController.SetNotificationStatusRequest request)
+        public async Task SetNotificationStatus_PassesCorrectCommand_ToService(Guid accountIdentifier, long notificationIdentifier, LearnerNotificationsController.SetNotificationStatusRequest request)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<SetNotificationStatusCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.SetNotificationStatusAsync(It.IsAny<SetNotificationStatusCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
             await _controller.SetNotificationStatus(accountIdentifier, notificationIdentifier, request);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<SetNotificationStatusCommand>(cmd => 
-                    cmd.AccountIdentifier == accountIdentifier && 
-                    cmd.NotificationIdentifier == notificationIdentifier && 
+            _notificationServiceMock.Verify(s => s.SetNotificationStatusAsync(
+                It.Is<SetNotificationStatusCommand>(cmd =>
+                    cmd.AccountIdentifier == accountIdentifier &&
+                    cmd.NotificationIdentifier == notificationIdentifier &&
                     cmd.StatusId == request.StatusId),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
@@ -273,7 +275,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task CreateNotification_ReturnsOk_WhenSuccessful(Guid accountIdentifier, LearnerNotificationsController.CreateNotificationRequest request)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.CreateNotificationAsync(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -284,18 +286,18 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task CreateNotification_PassesCorrectCommand_ToMediator(Guid accountIdentifier, LearnerNotificationsController.CreateNotificationRequest request)
+        public async Task CreateNotification_PassesCorrectCommand_ToService(Guid accountIdentifier, LearnerNotificationsController.CreateNotificationRequest request)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.CreateNotificationAsync(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
             await _controller.CreateNotification(accountIdentifier, request);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<CreateNotificationCommand>(cmd => 
+            _notificationServiceMock.Verify(s => s.CreateNotificationAsync(
+                It.Is<CreateNotificationCommand>(cmd =>
                     cmd.CorrelationId == request.CorrelationId &&
                     cmd.LearnerAccountId == accountIdentifier &&
                     cmd.Category == request.Category &&
@@ -316,7 +318,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task DeleteNotification_ReturnsNoContent_Always(Guid accountIdentifier, long notificationId)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteNotificationCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.DeleteNotificationAsync(It.IsAny<DeleteNotificationCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
@@ -327,24 +329,24 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         }
 
         [Test, MoqAutoData]
-        public async Task DeleteNotification_PassesCorrectCommand_ToMediator(Guid accountIdentifier, long notificationId)
+        public async Task DeleteNotification_PassesCorrectCommand_ToService(Guid accountIdentifier, long notificationId)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<DeleteNotificationCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.DeleteNotificationAsync(It.IsAny<DeleteNotificationCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             // Act
             await _controller.DeleteNotification(accountIdentifier, notificationId);
 
             // Assert
-            _mediatorMock.Verify(m => m.Send(
-                It.Is<DeleteNotificationCommand>(cmd => 
-                    cmd.AccountIdentifier == accountIdentifier && 
+            _notificationServiceMock.Verify(s => s.DeleteNotificationAsync(
+                It.Is<DeleteNotificationCommand>(cmd =>
+                    cmd.AccountIdentifier == accountIdentifier &&
                     cmd.NotificationIdentifier == notificationId),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
 
-        // ==================== Model Tests (unchanged but kept) ====================
+        // ==================== Model Tests (unchanged) ====================
 
         [Test]
         public void CreateNotificationRequest_Model_Test()
@@ -481,7 +483,7 @@ namespace SFA.DAS.LearnerNotifications.UnitTests
         public async Task CreateNotification_HandlesDifferentUrgencyLevels(Guid accountIdentifier)
         {
             // Arrange
-            _mediatorMock.Setup(m => m.Send(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
+            _notificationServiceMock.Setup(s => s.CreateNotificationAsync(It.IsAny<CreateNotificationCommand>(), It.IsAny<CancellationToken>()))
                 .Returns(Task.CompletedTask);
 
             var requestLow = new LearnerNotificationsController.CreateNotificationRequest

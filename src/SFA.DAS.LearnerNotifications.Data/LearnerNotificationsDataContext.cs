@@ -30,6 +30,7 @@ namespace SFA.DAS.LearnerNotifications.Data
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<StatusHistory> StatusHistory { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
+        public virtual DbSet<Urgency> Urgencies { get; set; }
 
         private readonly LearnerNotificationsConfiguration _configuration;
         private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
@@ -78,6 +79,7 @@ namespace SFA.DAS.LearnerNotifications.Data
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new StatusHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new StatusConfiguration());
+            modelBuilder.ApplyConfiguration(new UrgencyConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

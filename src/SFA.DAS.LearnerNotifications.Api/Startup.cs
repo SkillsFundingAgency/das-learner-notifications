@@ -23,6 +23,7 @@ using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.Domain.Configuration;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Api.AppStart;
+using SFA.DAS.LearnerNotifications.Application.Notifications;
 
 namespace SFA.DAS.LearnerNotifications.Api
 {
@@ -92,7 +93,7 @@ namespace SFA.DAS.LearnerNotifications.Api
                     .AddDbContextCheck<LearnerNotificationsDataContext>();
             }
 
-            services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<GetNotificationByIdQueryHandler>());
+            services.AddScoped<INotificationService, NotificationService>();
 
             services.AddDatabaseRegistration(_configuration, _configuration["EnvironmentName"]);
 

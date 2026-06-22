@@ -31,12 +31,11 @@
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
+        <!-- Removed the conflicting Microsoft.EntityFrameworkCore.Relational reference -->
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.0" />
         <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.103" />
         <PackageReference Include="Azure.Identity" Version="1.17.1" />
         <PackageReference Include="Microsoft.Identity.Client" Version="4.80.0" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>

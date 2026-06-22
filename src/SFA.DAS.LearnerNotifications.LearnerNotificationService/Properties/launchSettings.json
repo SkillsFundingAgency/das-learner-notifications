@@ -2,7 +2,7 @@
   "profiles": {
     "SFA.DAS.LearnerNotifications.LearnerNotificationService": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7274",
+      "commandLineArgs": "--port 7118 --verbose",
       "launchBrowser": false
     }
   }

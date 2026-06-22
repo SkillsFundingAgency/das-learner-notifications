@@ -58,14 +58,15 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="Tables\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Tables\Notification.sql" />
     <Build Include="Tables\StatusHistory.sql" />
-    <Build Include="Tables\StatusType.sql" />
-    <Build Include="Tables\UrgencyType.sql" />
+    <Build Include="Tables\Status.sql" />
+    <Build Include="Tables\Urgency.sql" />    
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="zScript.PostDeployment.sql" />
+    <PostDeploy Include="Data\SampleData.sql" />
   </ItemGroup>
 </Project>

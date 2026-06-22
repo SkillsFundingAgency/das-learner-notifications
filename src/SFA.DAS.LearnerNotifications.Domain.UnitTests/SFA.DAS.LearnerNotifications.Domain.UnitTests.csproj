@@ -27,7 +27,6 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
         <PackageReference Include="SFA.DAS.Testing.AutoFixture" Version="17.1.103" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
     <ItemGroup>

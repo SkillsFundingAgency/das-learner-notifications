@@ -1,47 +1,51 @@
-using Azure.Monitor.OpenTelemetry.Exporter;
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Builder;
-using Microsoft.Azure.Functions.Worker.OpenTelemetry;
+﻿using Microsoft.Azure.Functions.Worker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NServiceBus; 
-using OpenTelemetry;
-using SFA.DAS.LearnerNotifications.Application.Data;
-using SFA.DAS.LearnerNotifications.Application.Infrastructure;
-using SFA.DAS.LearnerNotifications.Application.Services;
+using SFA.DAS.Configuration.AzureTableStorage;
+using SFA.DAS.LearnerNotifications.Application.Notifications;
+using SFA.DAS.LearnerNotifications.Data;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
 
+var host = new HostBuilder()
+    .ConfigureFunctionsWorkerDefaults()
+    .ConfigureAppConfiguration((context, config) =>
+    {
+        config.AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+        config.AddEnvironmentVariables();
 
-//[assembly: NServiceBusTriggerFunction(endpointName: "sfa-das-learnernotifications", Connection = "ServiceBusConnectionString")]
+        var builtConfig = config.Build();
+        var environmentName = builtConfig["EnvironmentName"];
+        var configNames = builtConfig["ConfigNames"]?.Split(',') ?? new[] { "SFA.DAS.LearnerNotifications" };
+        var storageConnectionString = builtConfig["ConfigurationStorageConnectionString"];
 
-var builder = FunctionsApplication.CreateBuilder(args);
+        if (!string.IsNullOrEmpty(storageConnectionString) && !string.IsNullOrEmpty(environmentName))
+        {
+            config.AddAzureTableStorage(options =>
+            {
+                options.ConfigurationKeys = configNames;
+                options.StorageConnectionString = storageConnectionString;
+                options.EnvironmentName = environmentName;
+                options.PreFixConfigurationKeys = false;
+            });
+        }
+    })
+    .ConfigureServices((context, services) =>
+    {
+        var sqlConnectionString = context.Configuration["LearnerNotifications:SqlConnectionString"]
+                                  ?? context.Configuration["DatabaseConnectionString"]
+                                  ?? context.Configuration["SqlConnectionString"];
 
-builder.ConfigureFunctionsWebApplication();
-builder.Configuration.AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
-builder.Configuration.AddEnvironmentVariables();
+        if (string.IsNullOrEmpty(sqlConnectionString))
+            throw new InvalidOperationException("Database connection string not found in configuration");
 
-builder.Services.AddDbContext<ILearnerNotificationsDataContext, LearnerNotificationsDataContext>(options => { 
-    options.UseSqlServer(builder.Configuration["DatabaseConnectionString"], sqlOptions => sqlOptions.CommandTimeout(600));
-});
+        services.AddDbContext<LearnerNotificationsDataContext>(options =>
+            options.UseSqlServer(sqlConnectionString, sqlOptions =>
+                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(20), null)));
 
-//TODO: The functions runtime starts prior to starting this service so there is a risk of ASB bindings trying to receive messages before the queues are created.  This should be treated as tech debt and resolved by the new AS messaging libraries when they are ready.
-builder.Services.AddHostedService<MessagingAdministration>();
+        services.AddScoped<INotificationService, NotificationService>();
+    })
+    .Build();
 
-
-builder.Services.AddScoped<INotificationProcessor, NotificationProcessor>();
-
-//builder.AddNServiceBus(config => { 
-//    config.Transport.UseWebSockets = builder.Configuration["UseWebSockets"]?.ToLower() == "true";
-//    config.AdvancedConfiguration.SendFailedMessagesTo("sfa-das-learnernotifications-errors");
-//    config.AdvancedConfiguration.EnableInstallers();    
-//});
-
-var appInsightsCnn =  builder.Configuration["AzureMonitor:ConnectionString"];
-
-
-//builder.Services.AddOpenTelemetry()
-//    .UseFunctionsWorkerDefaults()
-//    .UseAzureMonitorExporter(options => options.ConnectionString = appInsightsCnn);
-
-await builder.Build().RunAsync();
+await host.RunAsync();

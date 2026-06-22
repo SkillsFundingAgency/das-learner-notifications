@@ -1,20 +1,21 @@
-﻿CREATE TABLE [dbo].[Notification](
-    [Id] [bigint] IDENTITY(1,1) NOT NULL CONSTRAINT [PK_Notification] PRIMARY KEY CLUSTERED,
-    [CorrelationId] [uniqueidentifier] Not Null,
-    [LearnerAccountId] [uniqueidentifier] Not Null,
+CREATE TABLE [dbo].[Notification](
+    [NotificationId] [bigint] IDENTITY(1,1) NOT NULL,
+    [CorrelationId] [uniqueidentifier] NULL,
+    [LearnerAccountId] [uniqueidentifier] NULL,
     [Category] [nvarchar](255) NULL,
-    [Heading] [nvarchar](255) NOT NULL,
-    [Body] [nvarchar](max) NOT NULL,
-    LinkUrl [nvarchar](max) NULL,
-    [Status] [tinyint] NOT NULL Constraint [FK_Notification_Status] Foreign Key References [dbo].[StatusType]([Id]),
-    [NotificationTime] [datetime2] NOT NULL,
-    [TimeToExpire] [datetime2] NOT NULL CONSTRAINT [DF_Notification_TimeToExpire] DEFAULT (dateadd(month, 3, getdate())),
-    [TimeReceived] [datetime2] NOT NULL,
-    [Urgency] [tinyint] NULL CONSTRAINT [FK_Notification_Urgency] FOREIGN KEY REFERENCES [dbo].[UrgencyType]([Id])
+    [Heading] [nvarchar](255) NULL,
+    [Body] [nvarchar](max) NULL,
+    [StatusId] [tinyint] NULL,
+    [NotificationTime] [datetime] NULL,
+    [TimeToExpire] [datetime] NULL,
+    [TimeReceived] [datetime] NULL,
+    [Link] [nvarchar](500) NULL,
+    [UrgencyId] [tinyint] NULL
 ) ON [PRIMARY]
 GO
 
-CREATE INDEX [IX_Notification_CorrelationId] ON [dbo].[Notification] (
-    CorrelationId
-)
+ALTER TABLE [dbo].[Notification] ADD PRIMARY KEY CLUSTERED 
+(
+    [NotificationId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 GO

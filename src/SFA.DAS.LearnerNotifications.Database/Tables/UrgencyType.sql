@@ -1,5 +1,0 @@
-﻿CREATE TABLE [dbo].[UrgencyType]
-(
-	[Id] TINYINT NOT NULL CONSTRAINT PK_UrgencyType PRIMARY KEY CLUSTERED,
-	[Description] NVARCHAR(255) NOT NULL
-)

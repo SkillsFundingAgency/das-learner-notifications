@@ -1,9 +1,8 @@
 using System;
-using MediatR;
 
 namespace SFA.DAS.LearnerNotifications.Application.Commands
 {
-    public class SetNotificationStatusCommand : IRequest
+    public class SetNotificationStatusCommand
     {
         public Guid AccountIdentifier { get; set; }
         public long NotificationIdentifier { get; set; }
