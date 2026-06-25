@@ -1,6 +1,9 @@
-﻿using System;
+﻿extern alias AzureIdentityAlias;
+
+using System;
 using System.Diagnostics.CodeAnalysis;
-using Microsoft.Azure.Services.AppAuthentication;
+using Azure.Core;
+using AzureIdentityAlias::Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,16 +22,17 @@ namespace SFA.DAS.LearnerNotifications.Api.AppStart
             }
             else if (environmentName.Equals("LOCAL", StringComparison.CurrentCultureIgnoreCase))
             {
-                services.AddDbContext<LearnerNotificationsDataContext>(options => options.UseSqlServer(config["ApplicationSettings:SqlConnectionString"]),ServiceLifetime.Transient);
+                services.AddDbContext<LearnerNotificationsDataContext>(options => options.UseSqlServer(config["ApplicationSettings:SqlConnectionString"]), ServiceLifetime.Transient);
             }
             else
             {
-                services.AddSingleton(new AzureServiceTokenProvider());
-                services.AddDbContext<LearnerNotificationsDataContext>(ServiceLifetime.Transient);    
+                // Use the aliased version of DefaultAzureCredential
+                services.AddSingleton<TokenCredential>(new DefaultAzureCredential());
+                services.AddDbContext<LearnerNotificationsDataContext>(ServiceLifetime.Transient);
             }
             
             services.AddTransient<ILearnerNotificationsDataContext, LearnerNotificationsDataContext>(provider => provider.GetService<LearnerNotificationsDataContext>());
-            services.AddTransient(provider => new Lazy<LearnerNotificationsDataContext>(provider.GetService<LearnerNotificationsDataContext>()));   
+            services.AddTransient(provider => new Lazy<LearnerNotificationsDataContext>(provider.GetService<LearnerNotificationsDataContext>()));
         }
     }
 }

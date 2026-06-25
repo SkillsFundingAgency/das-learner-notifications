@@ -2,7 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Azure.Services.AppAuthentication;
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -26,14 +27,13 @@ namespace SFA.DAS.LearnerNotifications.Data
     {
         private const string AzureResource = "https://database.windows.net/";
 
-        // New entities for Notifications feature
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<StatusHistory> StatusHistory { get; set; }
         public virtual DbSet<Status> Statuses { get; set; }
         public virtual DbSet<Urgency> Urgencies { get; set; }
 
         private readonly LearnerNotificationsConfiguration _configuration;
-        private readonly AzureServiceTokenProvider _azureServiceTokenProvider;
+        private readonly TokenCredential _tokenCredential;
 
         public LearnerNotificationsDataContext()
         {
@@ -41,28 +41,34 @@ namespace SFA.DAS.LearnerNotifications.Data
 
         public LearnerNotificationsDataContext(DbContextOptions options) : base(options)
         {
-
         }
 
-        public LearnerNotificationsDataContext(IOptions<LearnerNotificationsConfiguration> config, DbContextOptions options, AzureServiceTokenProvider azureServiceTokenProvider) : base(options)
+        public LearnerNotificationsDataContext(
+            IOptions<LearnerNotificationsConfiguration> config,
+            DbContextOptions options,
+            TokenCredential tokenCredential) : base(options)
         {
             _configuration = config.Value;
-            _azureServiceTokenProvider = azureServiceTokenProvider;
+            _tokenCredential = tokenCredential;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseLazyLoadingProxies();
 
-            if (_configuration == null || _azureServiceTokenProvider == null)
+            if (_configuration == null || _tokenCredential == null)
             {
                 return;
             }
 
+            // Obtain an access token for Azure SQL Database
+            var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net/.default" });
+            var accessToken = _tokenCredential.GetToken(tokenRequestContext, CancellationToken.None);
+
             var connection = new SqlConnection
             {
                 ConnectionString = _configuration.SqlConnectionString,
-                AccessToken = _azureServiceTokenProvider.GetAccessTokenAsync(AzureResource).Result,
+                AccessToken = accessToken.Token
             };
 
             optionsBuilder.UseSqlServer(connection, options =>
@@ -75,7 +81,6 @@ namespace SFA.DAS.LearnerNotifications.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Apply configurations for all entities
             modelBuilder.ApplyConfiguration(new NotificationConfiguration());
             modelBuilder.ApplyConfiguration(new StatusHistoryConfiguration());
             modelBuilder.ApplyConfiguration(new StatusConfiguration());
