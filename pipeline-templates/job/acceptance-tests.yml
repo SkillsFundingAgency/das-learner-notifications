@@ -27,7 +27,7 @@ jobs:
     displayName: Run acceptance tests
     inputs:
       command: test
-      projects: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/acceptance-tests/net10.0/${{ parameters.SolutionBaseName }}.Tests.Acceptance.dll
+      projects: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/acceptance-tests/net10.0/${{ parameters.SolutionBaseName }}.Api.ReqnrollTests.dll
       arguments: --logger trx --results-directory $(Agent.TempDirectory)/TestResults
       testRunTitle: Acceptance Tests - ${{ parameters.Environment }}
 
