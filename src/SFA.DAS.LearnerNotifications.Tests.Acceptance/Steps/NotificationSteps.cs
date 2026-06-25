@@ -13,7 +13,7 @@ using SFA.DAS.LearnerNotifications.Application.Queries.Results;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
 
-namespace SFA.DAS.LearnerNotifications.Api.ReqnrollTests.Steps;
+namespace SFA.DAS.LearnerNotifications.Tests.Acceptance.Steps;
 
 [Binding]
 public class NotificationSteps
