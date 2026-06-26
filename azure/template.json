@@ -338,7 +338,7 @@
                                 },
                                 {
                                     "name": "ServiceBusConnectionString",
-                                    "value": "[reference(concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))).outputs.ServiceBusConnectionString.value]"
+                                    "value": "[reference(concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))).outputs.ServiceBusEndpoint.value]"
                                 },
                                 {
                                     "name": "EndpointName",
