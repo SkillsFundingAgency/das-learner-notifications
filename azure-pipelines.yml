@@ -16,8 +16,8 @@ variables:
 - name: BuildConfiguration
   value: release
 - name: BuildPlatform
-  value: any cpu
-- group: RELEASE Management Resources
+  value: anyELEASE Management Resources cpu
+- group: R
 - group: RELEASE das-learner-notifications
 - name: Deploy
   value: $[or(eq(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual'), eq(variables['Build.Reason'], 'PullRequest'))]
