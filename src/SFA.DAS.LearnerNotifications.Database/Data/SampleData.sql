@@ -115,6 +115,9 @@ GO
 SET IDENTITY_INSERT [dbo].[Notification] OFF;
 GO
 
+SET IDENTITY_INSERT [dbo].[StatusHistory] ON;
+GO
+
 -- Insert status history for the notifications
 INSERT INTO [dbo].[StatusHistory] (
     [StatusHistoryId],
@@ -152,6 +155,10 @@ VALUES
 -- Notification 7: Pending -> Read
 (15, 1007, 0, DATEADD(day, -30, GETUTCDATE())),
 (16, 1007, 2, DATEADD(day, -29, GETUTCDATE()));
+GO
+
+-- Turn off identity insert
+SET IDENTITY_INSERT [dbo].[StatusHistory] OFF;
 GO
 
 -- Verify the data
