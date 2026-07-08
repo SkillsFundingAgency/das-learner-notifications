@@ -16,13 +16,6 @@ jobs:
       artifact: ${{ parameters.SolutionBaseName }}
       path: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}
 
-  - task: FileTransform@1
-    displayName: Transform appSettings.json
-    inputs:
-      folderPath: $(Pipeline.Workspace)/${{ parameters.SolutionBaseName }}/acceptance-tests
-      fileType: json
-      targetFiles: appSettings.json
-
   - task: DotNetCoreCLI@2
     displayName: Run acceptance tests
     inputs:
