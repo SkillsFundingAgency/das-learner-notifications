@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerNotifications.Application.Commands;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.Functions;
 
+[ExcludeFromCodeCoverage]
 public class HandleSendNotification
 {
     private readonly INotificationService _notificationService;
