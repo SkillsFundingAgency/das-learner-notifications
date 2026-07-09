@@ -70,20 +70,6 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
-- stage: AcceptanceTests_AT
-  dependsOn: Deploy_AT
-  displayName: Acceptance Tests - AT
-  condition: and(succeeded(), eq(variables.Deploy, 'true'))
-  variables:
-  - group: DevTest Management Resources
-  - group: AT DevTest Shared Resources
-  - group: AT das-learner-notifications
-  jobs:
-  - template: pipeline-templates/job/acceptance-tests.yml
-    parameters:
-      Environment: AT
-      SolutionBaseName: $(SolutionBaseName)
-
 - stage: Deploy_TEST
   dependsOn: Build
   displayName: Deploy to TEST
@@ -100,20 +86,6 @@ stages:
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
 
-- stage: AcceptanceTests_TEST
-  dependsOn: Deploy_TEST
-  displayName: Acceptance Tests - TEST
-  condition: and(succeeded(), eq(variables.Deploy, 'true'))
-  variables:
-  - group: DevTest Management Resources
-  - group: TEST DevTest Shared Resources
-  - group: TEST das-learner-notifications
-  jobs:
-  - template: pipeline-templates/job/acceptance-tests.yml
-    parameters:
-      Environment: TEST
-      SolutionBaseName: $(SolutionBaseName)
-
 - stage: Deploy_TEST2
   dependsOn: Build
   displayName: Deploy to TEST2
@@ -129,20 +101,6 @@ stages:
       SolutionBaseName: $(SolutionBaseName)
       ServiceConnection: SFA-DAS-DevTest-ARM
       OverrideBlockOnPossibleDataLoss: ${{ parameters.OverrideBlockOnPossibleDataLoss  }}
-
-- stage: AcceptanceTests_TEST2
-  dependsOn: Deploy_TEST2
-  displayName: Acceptance Tests - TEST2
-  condition: and(succeeded(), eq(variables.Deploy, 'true'))
-  variables:
-  - group: DevTest Management Resources
-  - group: TEST2 DevTest Shared Resources
-  - group: TEST2 das-learner-notifications
-  jobs:
-  - template: pipeline-templates/job/acceptance-tests.yml
-    parameters:
-      Environment: TEST2
-      SolutionBaseName: $(SolutionBaseName)
 
 - stage: Deploy_PP
   dependsOn: Build
