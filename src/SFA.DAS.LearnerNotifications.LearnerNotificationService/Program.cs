@@ -1,16 +1,20 @@
-﻿using Microsoft.Azure.Functions.Worker;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
-using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: ExcludeFromCodeCoverage]
-var host = new HostBuilder()
+namespace SFA.DAS.LearnerNotifications;
+
+[ExcludeFromCodeCoverage]
+public static class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration((context, config) =>
     {
@@ -50,4 +54,6 @@ var host = new HostBuilder()
     })
     .Build();
 
-await host.RunAsync();
+        await host.RunAsync();
+    }
+}
