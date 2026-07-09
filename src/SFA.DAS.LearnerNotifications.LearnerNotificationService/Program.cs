@@ -7,7 +7,9 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
+[assembly: ExcludeFromCodeCoverage]
 var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration((context, config) =>
