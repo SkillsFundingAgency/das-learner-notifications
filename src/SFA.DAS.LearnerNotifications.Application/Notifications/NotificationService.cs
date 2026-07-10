@@ -161,5 +161,31 @@ namespace SFA.DAS.LearnerNotifications.Application.Notifications
             _context.Notifications.Remove(notification);
             await _context.SaveChangesAsync(cancellationToken);
         }
+        
+        public async Task<int> DeleteExpiredNotificationsAsync(CancellationToken cancellationToken)
+        {
+            var now = DateTime.UtcNow;
+            var expiredNotifications = await _context.Notifications
+                .Where(n => n.TimeToExpire < now)
+                .ToListAsync(cancellationToken);
+
+            if (!expiredNotifications.Any())
+                return 0;
+
+            var notificationIds = expiredNotifications.Select(n => n.NotificationId).ToList();
+
+            // Delete associated status history
+            var statusHistories = await _context.StatusHistory
+                .Where(sh => sh.NotificationId.HasValue && notificationIds.Contains(sh.NotificationId.Value))
+                .ToListAsync(cancellationToken);
+
+            if (statusHistories.Any())
+                _context.StatusHistory.RemoveRange(statusHistories);
+
+            _context.Notifications.RemoveRange(expiredNotifications);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return expiredNotifications.Count;
+        }
     }
 }

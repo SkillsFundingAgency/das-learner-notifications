@@ -33,5 +33,8 @@ namespace SFA.DAS.LearnerNotifications.Application.Notifications
         Task DeleteNotificationAsync(
             DeleteNotificationCommand command,
             CancellationToken cancellationToken);
+        
+        Task<int> DeleteExpiredNotificationsAsync(
+            CancellationToken cancellationToken);
     }
 }
