@@ -8,7 +8,14 @@ using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
 
-var host = new HostBuilder()
+namespace SFA.DAS.LearnerNotifications;
+
+[ExcludeFromCodeCoverage]
+public static class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var host = new HostBuilder()
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureAppConfiguration((context, config) =>
     {
@@ -48,4 +55,6 @@ var host = new HostBuilder()
     })
     .Build();
 
-await host.RunAsync();
+        await host.RunAsync();
+    }
+}

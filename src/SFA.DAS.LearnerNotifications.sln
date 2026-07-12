@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotification
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests", "SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests\SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.csproj", "{E3F8475D-D248-4CD1-9E7F-A613DDD2D7B7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Tests.Acceptance", "SFA.DAS.LearnerNotifications.Tests.Acceptance\SFA.DAS.LearnerNotifications.Tests.Acceptance.csproj", "{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SFA.DAS.LearnerNotifications.Api.ReqnrollTests", "SFA.DAS.LearnerNotifications.Api.ReqnrollTests\SFA.DAS.LearnerNotifications.Api.ReqnrollTests.csproj", "{F1A2B3C4-D5E6-4F7A-8B9C-0D1E2F3A4B5C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
