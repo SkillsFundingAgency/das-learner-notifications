@@ -125,7 +125,7 @@
         "databaseName": "[concat(variables('resourceNamePrefix'), '-db')]",
         "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'), '-ns')]",
         "privateLinkScopeName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-ampls'))]",
-        "configNames": "DAS.LearnerNotifications",
+        "configNames": "SFA.DAS.LearnerNotifications.Api",
         "routeTableId": {
             "id": "[resourceId(subscription().subscriptionId, parameters('sharedEnvResourceGroup'), 'Microsoft.Network/routeTables', parameters('SharedRouteTableName'))]"
         },
