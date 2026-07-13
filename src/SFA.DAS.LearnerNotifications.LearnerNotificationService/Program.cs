@@ -7,6 +7,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications;
 
