@@ -29,8 +29,8 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.Feat
         
         private static string[] featureTags = ((string[])(null));
         
-        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Process Send Notifications", "  As a learner notification system\r\n  I want to receive SendNotification messages" +
-                "\r\n  So that they are stored in the database and can be viewed later", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
+        private static global::Reqnroll.FeatureInfo featureInfo = new global::Reqnroll.FeatureInfo(new System.Globalization.CultureInfo("en-US"), "Features", "Process Send Notifications", "  As a learner notification system\n  I want to receive SendNotification messages\n" +
+                "  So that they are stored in the database and can be viewed later", global::Reqnroll.ProgrammingLanguage.CSharp, featureTags);
         
 #line 1 "ProcessSendNotifications.feature"
 #line hidden
