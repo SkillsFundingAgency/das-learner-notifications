@@ -103,6 +103,9 @@
         "sharedSQLServerName": {
             "type": "string"
         },
+        "databaseConnectionString": {
+            "type": "securestring"
+        },
         "endpointName": {
             "type": "string"
         },
@@ -341,6 +344,10 @@
                                     "value": "[reference(concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))).outputs.ServiceBusEndpoint.value]"
                                 },
                                 {
+                                    "name": "DatabaseConnectionString",
+                                    "value": "[parameters('databaseConnectionString')]"
+                                },
+                                {
                                     "name": "EndpointName",
                                     "value": "[parameters('endpointName')]"
                                 },
@@ -495,6 +502,10 @@
                                 {
                                     "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
                                     "value": "[reference(concat(variables('appServiceName'), '-application-insights-', parameters('utcValue'))).outputs.ConnectionString.value]"
+                                },
+                                {
+                                    "name": "DatabaseConnectionString",
+                                    "value": "[parameters('databaseConnectionString')]"
                                 }
                             ]
                         }

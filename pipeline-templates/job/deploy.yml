@@ -41,6 +41,7 @@ jobs:
               LoggingRedisConnectionString: $(LoggingRedisConnectionString)
               ConfigurationStorageConnectionString: $(ConfigurationStorageConnectionString)
               SharedStorageAccountConnectionString: $(SharedStorageAccountConnectionString)
+              DatabaseConnectionString: $(DatabaseConnectionString)
               WorkerAccessRestrictions: $(WorkerAccessRestrictions)
               BackEndAccessRestrictions: $(BackEndAccessRestrictions)
         - template: azure-pipelines-templates/deploy/step/generate-config.yml@das-platform-building-blocks
