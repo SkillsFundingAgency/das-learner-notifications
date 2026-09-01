@@ -192,7 +192,7 @@
                         "value": "[parameters('sharedSQLServerName')]"
                     },
                     "subnetResourceIdList": {
-                        "value": "[createArray(reference(concat((parameters('subnetObject').name, '-', parameters('utcValue'))).outputs.SubnetResourceId.value)]"
+                        "value": "[createArray(reference(concat(parameters('subnetObject').name, '-', parameters('utcValue'))).outputs.SubnetResourceId.value)]"
                     }
                 }
             }
