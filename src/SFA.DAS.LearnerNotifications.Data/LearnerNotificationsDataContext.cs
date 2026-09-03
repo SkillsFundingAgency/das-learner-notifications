@@ -35,17 +35,13 @@ namespace SFA.DAS.LearnerNotifications.Data
         private readonly LearnerNotificationsConfiguration _configuration;
         private readonly TokenCredential _tokenCredential;
 
-        public LearnerNotificationsDataContext()
-        {
-        }
-
-        public LearnerNotificationsDataContext(DbContextOptions options) : base(options)
-        {
-        }
+        //public LearnerNotificationsDataContext(DbContextOptions options) : base(options)
+        //{
+        //}
 
         public LearnerNotificationsDataContext(
             IOptions<LearnerNotificationsConfiguration> config,
-            DbContextOptions options,
+            DbContextOptions<LearnerNotificationsDataContext> options,
             TokenCredential tokenCredential) : base(options)
         {
             _configuration = config.Value;
