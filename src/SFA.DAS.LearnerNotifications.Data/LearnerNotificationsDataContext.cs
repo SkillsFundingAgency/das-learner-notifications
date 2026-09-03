@@ -33,19 +33,17 @@ namespace SFA.DAS.LearnerNotifications.Data
         public virtual DbSet<Urgency> Urgencies { get; set; }
 
         private readonly LearnerNotificationsConfiguration _configuration;
-        private readonly TokenCredential _tokenCredential;
+        private readonly TokenCredential _tokenCredential;       
 
-        public LearnerNotificationsDataContext()
-        {
-        }
-
-        public LearnerNotificationsDataContext(DbContextOptions options) : base(options)
+        public LearnerNotificationsDataContext(
+    DbContextOptions<LearnerNotificationsDataContext> options)
+    : base(options)
         {
         }
 
         public LearnerNotificationsDataContext(
             IOptions<LearnerNotificationsConfiguration> config,
-            DbContextOptions options,
+            DbContextOptions<LearnerNotificationsDataContext> options,
             TokenCredential tokenCredential) : base(options)
         {
             _configuration = config.Value;
