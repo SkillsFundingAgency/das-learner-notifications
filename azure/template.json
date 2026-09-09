@@ -113,6 +113,9 @@
         "SharedRouteTableName": {
             "type": "string",
             "defaultValue": ""
+        },
+        "sharedServiceBusName": {
+            "type": "string"
         }
     },
     "variables": {
