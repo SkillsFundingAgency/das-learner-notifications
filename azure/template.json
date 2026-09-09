@@ -113,17 +113,19 @@
         "SharedRouteTableName": {
             "type": "string",
             "defaultValue": ""
+        },
+        "sharedServiceBusName": {
+            "type": "string"
         }
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
         "resourceNamePrefix": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-', parameters('serviceName')))]",
         "resourceGroupName": "[concat(variables('resourceNamePrefix'), '-rg')]",
-        "functionAppName": "[concat(variables('resourceNamePrefix'), '-fa')]",
-        "appServicePlanName": "[concat(variables('resourceNamePrefix'), '-asp')]",
-        "appServiceName": "[concat(variables('resourceNamePrefix'), '-as')]",
+        "functionAppName": "[concat(variables('resourceNamePrefix'), 'wkr-fa')]",
+        "appServicePlanName": "[concat(variables('resourceNamePrefix'), 'wkr-asp')]",
+        "appServiceName": "[concat(variables('resourceNamePrefix'), 'api-as')]",
         "databaseName": "[concat(variables('resourceNamePrefix'), '-db')]",
-        "serviceBusNamespaceName": "[concat(variables('resourceNamePrefix'), '-ns')]",
         "privateLinkScopeName": "[toLower(concat('das-', parameters('resourceEnvironmentName'),'-shared-ampls'))]",
         "configNames": "SFA.DAS.LearnerNotifications.Api",
         "routeTableId": {
@@ -196,33 +198,6 @@
                     }
                 }
             }
-        },
-        {
-            "apiVersion": "2021-04-01",
-            "name": "[concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[variables('resourceGroupName')]",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('deploymentUrlBase'),'service-bus.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "serviceBusNamespaceName": {
-                        "value": "[variables('serviceBusNamespaceName')]"
-                    },
-                    "logAnalyticsWorkspaceName": {
-                        "value": "[parameters('logAnalyticsWorkspaceName')]"
-                    },
-                    "logAnalyticsWorkspaceResourceGroupName": {
-                        "value": "[parameters('sharedManagementResourceGroup')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('resourceGroupName')]"
-            ]
         },
         {
             "apiVersion": "2021-04-01",
@@ -358,14 +333,6 @@
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
-                                    "name": "ServiceBusConnectionString",
-                                    "value": "[reference(concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))).outputs.ServiceBusEndpoint.value]"
-                                },
-                                {
-                                    "name": "EndpointName",
-                                    "value": "[parameters('endpointName')]"
-                                },
-                                {
                                     "name": "FUNCTIONS_EXTENSION_VERSION",
                                     "value": "~4"
                                 },
@@ -390,9 +357,53 @@
             },
             "dependsOn": [
                 "[variables('resourceGroupName')]",
-                "[concat(variables('appServicePlanName'), '-', parameters('utcValue'))]",
-                "[concat(variables('serviceBusNamespaceName'), '-', parameters('utcValue'))]"
+                "[concat(variables('appServicePlanName'), '-', parameters('utcValue'))]"
             ]
+        },
+        {
+            "apiVersion": "2022-09-01",
+            "name": "[concat(variables('functionAppName'), '-cors-policies-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[variables('resourceGroupName')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'cors-policy.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "functionAppName": {
+                        "value": "[variables('functionAppName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('functionAppName'), '-', parameters('utcValue'))]"
+            ]
+        },
+        {
+            "apiVersion": "2021-04-01",
+            "name": "[concat('role-assignment-', variables('functionAppName'), '-', parameters('utcValue'))]",
+            "type": "Microsoft.Resources/deployments",
+            "resourceGroup": "[parameters('sharedEnvResourceGroup')]",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(variables('deploymentUrlBase'),'role-assignments/role-assignment-service-bus.json')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "principalId": {
+                        "value": "[reference(concat(variables('functionAppName'), '-', parameters('utcValue'))).outputs.managedServiceIdentityId.value]"
+                    },
+                    "assignmentType": {
+                        "value": "ServiceBusOwner"
+                    },
+                    "resourceName": {
+                        "value": "[parameters('sharedServiceBusName')]"
+                    }
+                }
+            }
         },
         {
             "apiVersion": "2021-04-01",
@@ -594,10 +605,6 @@
         "DatabaseName": {
             "type": "string",
             "value": "[variables('databaseName')]"
-        },
-        "ServiceBusNamespaceName": {
-            "type": "string",
-            "value": "[variables('serviceBusNamespaceName')]"
         }
     }
 }
