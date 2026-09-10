@@ -103,9 +103,6 @@
         "sharedSQLServerName": {
             "type": "string"
         },
-        "endpointName": {
-            "type": "string"
-        },
         "EnableRouteTableAssociation": {
             "type": "bool",
             "defaultValue": false
@@ -116,7 +113,10 @@
         },
         "sharedServiceBusName": {
             "type": "string"
-        }
+        },
+        "sharedServiceBusFqdn": {
+            "type": "string"
+        },
     },
     "variables": {
         "deploymentUrlBase": "https://raw.githubusercontent.com/SkillsFundingAgency/das-platform-building-blocks/master/templates/",
@@ -197,7 +197,10 @@
                         "value": "[createArray(reference(concat(parameters('subnetObject').name, '-', parameters('utcValue'))).outputs.SubnetResourceId.value)]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[concat(parameters('subnetObject').name, '-', parameters('utcValue'))]"
+            ]
         },
         {
             "apiVersion": "2021-04-01",
@@ -334,7 +337,7 @@
                                 },
                                 {
                                     "name": "ServiceBus__fullyQualifiedNamespace",
-                                    "value": "[parameters('SharedServiceBusFqdn')]"
+                                    "value": "[parameters('sharedServiceBusFqdn')]"
                                 },
                                 {
                                     "name": "FUNCTIONS_EXTENSION_VERSION",
