@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerNotifications.Application.Commands;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Infrastructure;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
 using System.Diagnostics.CodeAnalysis;
 
@@ -21,7 +22,7 @@ public class HandleSendNotification
 
     [Function(nameof(HandleSendNotification))]
     public async Task Run(
-        [ServiceBusTrigger("%EndpointName%", Connection = "ServiceBusConnectionString")]
+        [ServiceBusTrigger(QueueNames.LearnerNotificationsQueue, Connection = "ServiceBus")]
         SendNotification message,
         CancellationToken cancellationToken)
     {
