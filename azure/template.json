@@ -333,6 +333,10 @@
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
                                 },
                                 {
+                                    "name": "AzureWebJobsServiceBus__fullyQualifiedNamespace",
+                                    "value": "[parameters('SharedServiceBusFqdn')]"
+                                },
+                                {
                                     "name": "FUNCTIONS_EXTENSION_VERSION",
                                     "value": "~4"
                                 },
