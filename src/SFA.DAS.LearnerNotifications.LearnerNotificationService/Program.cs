@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -7,6 +8,7 @@ using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.Domain.Configuration;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Infrastructure;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications;
@@ -50,6 +52,9 @@ public static class Program
 
         services.AddSingleton<TokenCredential>(new DefaultAzureCredential());
 
+        // LOCAL DEVELOPMENT
+        //services.AddSingleton<TokenCredential>(new AzureCliCredential());
+
         services.Configure<LearnerNotificationsConfiguration>(options =>
         {
             options.SqlConnectionString = sqlConnectionString;
@@ -60,6 +65,23 @@ public static class Program
         services.AddScoped<INotificationService, NotificationService>();
     })
     .Build();
+
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+        var credential = host.Services.GetRequiredService<TokenCredential>();
+
+        var fullyQualifiedFunctionName = configuration["ServiceBus:fullyQualifiedNamespace"];
+
+        if (string.IsNullOrWhiteSpace(fullyQualifiedFunctionName)) throw new InvalidOperationException("Service Bus fully qualified namespace is not configured");
+
+        var serviceBusClient = new ServiceBusAdministrationClient(fullyQualifiedFunctionName, credential);
+
+        var queueName = QueueNames.LearnerNotificationsQueue;
+        var queueExists = await serviceBusClient.QueueExistsAsync(QueueNames.LearnerNotificationsQueue);
+        
+        if (!queueExists)
+        {
+            await serviceBusClient.CreateQueueAsync(QueueNames.LearnerNotificationsQueue);
+        }
 
         await host.RunAsync();
     }
