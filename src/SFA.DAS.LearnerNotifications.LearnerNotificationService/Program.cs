@@ -1,12 +1,12 @@
-﻿using Microsoft.Azure.Functions.Worker;
-using Microsoft.EntityFrameworkCore;
+﻿using Azure.Core;
+using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SFA.DAS.Configuration.AzureTableStorage;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
-using SFA.DAS.LearnerNotifications.LearnerNotificationService.Configuration;
+using SFA.DAS.LearnerNotifications.Domain.Configuration;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications;
@@ -48,9 +48,14 @@ public static class Program
         if (string.IsNullOrEmpty(sqlConnectionString))
             throw new InvalidOperationException("Database connection string not found in configuration");
 
-        services.AddDbContext<LearnerNotificationsDataContext>(options =>
-            options.UseSqlServer(sqlConnectionString, sqlOptions =>
-                sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(20), null)));
+        services.AddSingleton<TokenCredential>(new DefaultAzureCredential());
+
+        services.Configure<LearnerNotificationsConfiguration>(options =>
+        {
+            options.SqlConnectionString = sqlConnectionString;
+        });
+
+        services.AddDbContext<LearnerNotificationsDataContext>();
 
         services.AddScoped<INotificationService, NotificationService>();
     })

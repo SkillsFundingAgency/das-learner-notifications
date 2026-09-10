@@ -17,7 +17,7 @@ public class CleanupExpiredNotifications
 
     [Function("CleanupExpiredNotifications")]
     public async Task Run(
-        [TimerTrigger("0 0 2 * * *")] TimerInfo timer,
+        [TimerTrigger("0 0 2 * * *", RunOnStartup = true)] TimerInfo timer,
         CancellationToken cancellationToken)
     {
         try
