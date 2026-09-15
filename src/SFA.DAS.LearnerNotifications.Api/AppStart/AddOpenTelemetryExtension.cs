@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-//using Azure.Monitor.OpenTelemetry.AspNetCore;
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SFA.DAS.LearnerNotifications.Api.AppStart
