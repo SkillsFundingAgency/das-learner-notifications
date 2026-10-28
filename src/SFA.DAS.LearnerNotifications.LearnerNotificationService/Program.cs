@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using Azure.Messaging.ServiceBus.Administration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,7 @@ using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.Domain.Configuration;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Infrastructure;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Services;
 using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications;
@@ -63,6 +65,13 @@ public static class Program
         services.AddDbContext<LearnerNotificationsDataContext>();
 
         services.AddScoped<INotificationService, NotificationService>();
+
+        services.AddSingleton(sp => new ServiceBusClient(
+            context.Configuration["ServiceBus:fullyQualifiedNamespace"],
+            sp.GetRequiredService<TokenCredential>(),
+            new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpWebSockets }));
+
+        services.AddSingleton<IPushNotificationSender, PushNotificationSender>();
     })
     .Build();
 
