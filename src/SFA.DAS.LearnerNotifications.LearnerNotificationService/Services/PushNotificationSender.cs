@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Infrastructure;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.Services;
 
@@ -15,6 +16,8 @@ public interface IPushNotificationSender
 /// Sends a SendPushNotificationCommand to the SFA.DAS.PushNotifications NServiceBus endpoint
 /// as a native Service Bus message, so this service does not need to host NServiceBus itself.
 /// </summary>
+
+[ExcludeFromCodeCoverage]
 public class PushNotificationSender : IPushNotificationSender
 {
     public const string EnclosedMessageType =
@@ -35,7 +38,8 @@ public class PushNotificationSender : IPushNotificationSender
         {
             ApprenticeAccountIdentifier = notification.LearnerAccountId,
             Title = notification.Heading,
-            Body = notification.Body
+            Body = notification.Body,
+            Url = notification.LinkUrl
         });
 
         var message = new ServiceBusMessage(body)
