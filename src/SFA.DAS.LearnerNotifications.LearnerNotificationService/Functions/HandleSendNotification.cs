@@ -49,7 +49,7 @@ public class HandleSendNotification
             NotificationTime = message.NotificationTime,
             TimeToExpire = message.TimeToExpire,
             TimeReceived = DateTime.UtcNow,
-            Link = message.LinkUrl,
+            Link = message.Link,
             Urgency = (byte)message.Urgency
         };
 
