@@ -53,7 +53,7 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.Test
                 LearnerAccountId = Guid.NewGuid(),
                 Heading = "Heading",
                 Body = "Body",
-                LinkUrl = "/slug"
+                Link = "/slug"
             };
 
             await _pushNotificationSender.SendAsync(notification, CancellationToken.None);
