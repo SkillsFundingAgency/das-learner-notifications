@@ -11,7 +11,7 @@ namespace SFA.DAS.LearnerNotifications.Messages.Commands
         public string Category { get; set; }
         public string Heading { get; set; }
         public string Body { get; set; }
-        public string Link { get; set; }
+        public string LinkUrl { get; set; }
         public DateTime NotificationTime { get; set; }
         public DateTime TimeToExpire { get; set; } = DateTime.UtcNow.AddMonths(3);
         public Urgency Urgency { get; set; } = Urgency.Low;

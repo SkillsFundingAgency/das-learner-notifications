@@ -39,7 +39,7 @@ public class PushNotificationSender : IPushNotificationSender
             ApprenticeAccountIdentifier = notification.LearnerAccountId,
             Title = notification.Heading,
             Body = notification.Body,
-            Url = notification.Link
+            Url = notification.LinkUrl
         });
 
         var message = new ServiceBusMessage(body)

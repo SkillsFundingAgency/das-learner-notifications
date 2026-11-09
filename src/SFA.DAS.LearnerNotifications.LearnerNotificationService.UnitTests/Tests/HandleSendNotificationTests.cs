@@ -120,7 +120,7 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.Test
                 Category = "TestCategory",
                 Heading = "Test Heading",
                 Body = "Test Body",
-                Link = "http://test.com",
+                LinkUrl = "http://test.com",
                 NotificationTime = DateTime.UtcNow,
                 TimeToExpire = DateTime.UtcNow.AddDays(7),
                 Urgency = Urgency.Medium
@@ -138,7 +138,7 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.Test
                     cmd.StatusId == 1 &&
                     cmd.NotificationTime == message.NotificationTime &&
                     cmd.TimeToExpire == message.TimeToExpire &&
-                    cmd.Link == message.Link &&
+                    cmd.Link == message.LinkUrl &&
                     cmd.Urgency == (byte)message.Urgency &&
                     cmd.TimeReceived > DateTime.UtcNow.AddSeconds(-5)),
                 It.IsAny<CancellationToken>()), Times.Once);
@@ -174,7 +174,7 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.UnitTests.Test
                 LearnerAccountId = Guid.NewGuid(),
                 Heading = "No Link",
                 Body = "Body",
-                Link = null,
+                LinkUrl = null,
                 Urgency = Urgency.Medium
             };
 
