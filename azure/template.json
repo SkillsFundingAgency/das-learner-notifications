@@ -103,9 +103,6 @@
         "sharedSQLServerName": {
             "type": "string"
         },
-        "endpointName": {
-            "type": "string"
-        },
         "EnableRouteTableAssociation": {
             "type": "bool",
             "defaultValue": false
@@ -115,6 +112,9 @@
             "defaultValue": ""
         },
         "sharedServiceBusName": {
+            "type": "string"
+        },
+        "sharedServiceBusFqdn": {
             "type": "string"
         }
     },
@@ -197,7 +197,10 @@
                         "value": "[createArray(reference(concat(parameters('subnetObject').name, '-', parameters('utcValue'))).outputs.SubnetResourceId.value)]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "[concat(parameters('subnetObject').name, '-', parameters('utcValue'))]"
+            ]
         },
         {
             "apiVersion": "2021-04-01",
@@ -331,6 +334,10 @@
                                 {
                                     "name": "AzureWebJobsStorage",
                                     "value": "[parameters('sharedStorageAccountConnectionString')]"
+                                },
+                                {
+                                    "name": "ServiceBus__fullyQualifiedNamespace",
+                                    "value": "[parameters('sharedServiceBusFqdn')]"
                                 },
                                 {
                                     "name": "FUNCTIONS_EXTENSION_VERSION",

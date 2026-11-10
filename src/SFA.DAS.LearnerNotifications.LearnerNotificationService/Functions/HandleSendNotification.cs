@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Logging;
 using SFA.DAS.LearnerNotifications.Application.Commands;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Infrastructure;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Services;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
 using System.Diagnostics.CodeAnalysis;
 
@@ -11,17 +13,19 @@ namespace SFA.DAS.LearnerNotifications.LearnerNotificationService.Functions;
 public class HandleSendNotification
 {
     private readonly INotificationService _notificationService;
+    private readonly IPushNotificationSender _pushNotificationSender;
     private readonly ILogger<HandleSendNotification> _logger;
 
-    public HandleSendNotification(INotificationService notificationService, ILogger<HandleSendNotification> logger)
+    public HandleSendNotification(INotificationService notificationService, IPushNotificationSender pushNotificationSender, ILogger<HandleSendNotification> logger)
     {
         _notificationService = notificationService;
+        _pushNotificationSender = pushNotificationSender;
         _logger = logger;
     }
 
     [Function(nameof(HandleSendNotification))]
     public async Task Run(
-        [ServiceBusTrigger("%EndpointName%", Connection = "ServiceBusConnectionString")]
+        [ServiceBusTrigger(QueueNames.LearnerNotificationsQueue, Connection = "ServiceBus")]
         SendNotification message,
         CancellationToken cancellationToken)
     {
@@ -57,6 +61,16 @@ public class HandleSendNotification
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing notification: {CorrelationId}", message.CorrelationId);
+            throw;
+        }
+
+        try
+        {
+            await _pushNotificationSender.SendAsync(message, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error sending push notification: {CorrelationId}", message.CorrelationId);
             throw;
         }
     }

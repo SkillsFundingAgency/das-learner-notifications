@@ -9,6 +9,7 @@ using SFA.DAS.LearnerNotifications.Application.Notifications;
 using SFA.DAS.LearnerNotifications.Data;
 using SFA.DAS.LearnerNotifications.Domain.Entities;
 using SFA.DAS.LearnerNotifications.LearnerNotificationService.Functions;
+using SFA.DAS.LearnerNotifications.LearnerNotificationService.Services;
 using SFA.DAS.LearnerNotifications.Messages.Commands;
 using UrgencyEnum = SFA.DAS.LearnerNotifications.Messages.Commands.Urgency;
 
@@ -58,7 +59,8 @@ public class SendNotificationSteps
 
         var notificationService = new NotificationService(_dbContext);
         var logger = new Moq.Mock<Microsoft.Extensions.Logging.ILogger<HandleSendNotification>>().Object;
-        _function = new HandleSendNotification(notificationService, logger);
+        var pushNotificationSender = new Moq.Mock<IPushNotificationSender>().Object;
+        _function = new HandleSendNotification(notificationService, pushNotificationSender, logger);
     }
 
     [AfterScenario]
