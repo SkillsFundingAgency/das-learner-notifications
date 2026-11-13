@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using SFA.DAS.LearnerNotifications.Application.Models;
-using SFA.DAS.LearnerNotifications.Application.Queries;
+﻿using Microsoft.AspNetCore.Mvc;
 using SFA.DAS.LearnerNotifications.Application.Commands;
+using SFA.DAS.LearnerNotifications.Application.Models;
 using SFA.DAS.LearnerNotifications.Application.Notifications;
+using SFA.DAS.LearnerNotifications.Application.Queries;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace SFA.DAS.LearnerNotifications.Api.Controllers
 {
@@ -124,8 +125,12 @@ namespace SFA.DAS.LearnerNotifications.Api.Controllers
         public class CreateNotificationRequest
         {
             public Guid CorrelationId { get; set; }
+
+            [RegularExpression(@"^[^<>]*$", ErrorMessage = "Category must not contain '<' or '>'.")]
             public string Category { get; set; } = null!;
+            [RegularExpression(@"^[^<>]*$", ErrorMessage = "Heading must not contain '<' or '>'.")]
             public string Heading { get; set; } = null!;
+            [RegularExpression(@"^[^<>]*$", ErrorMessage = "Body must not contain '<' or '>'.")]
             public string Body { get; set; } = null!;
             public byte StatusId { get; set; }
             public DateTime NotificationTime { get; set; }
